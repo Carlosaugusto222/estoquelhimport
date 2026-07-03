@@ -139,6 +139,23 @@ export type Database = {
     }
     Functions: {
       admin_excluir_usuario: { Args: { _user_id: string }; Returns: undefined }
+      admin_listar_movimentacoes: {
+        Args: never
+        Returns: {
+          created_at: string
+          id: string
+          observacoes: string
+          produto_categoria: string
+          produto_id: string
+          produto_modelo: string
+          produto_qualidade: string
+          produto_tier: string
+          quantidade: number
+          tipo: string
+          user_email: string
+          user_id: string
+        }[]
+      }
       admin_listar_usuarios: {
         Args: never
         Returns: {

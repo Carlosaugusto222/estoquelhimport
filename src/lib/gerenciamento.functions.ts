@@ -58,3 +58,28 @@ export const excluirUsuario = createServerFn({ method: "POST" })
     if (error) throw new Error(error.message);
     return { ok: true };
   });
+
+export type MovimentacaoDetalhada = {
+  id: string;
+  created_at: string;
+  tipo: "entrada" | "saida" | string;
+  quantidade: number;
+  observacoes: string | null;
+  produto_id: string | null;
+  produto_categoria: string | null;
+  produto_modelo: string | null;
+  produto_qualidade: string | null;
+  produto_tier: string | null;
+  user_id: string | null;
+  user_email: string | null;
+};
+
+export const listarMovimentacoes = createServerFn({ method: "GET" })
+  .middleware([requireSupabaseAuth])
+  .handler(async ({ context }): Promise<MovimentacaoDetalhada[]> => {
+    const { data, error } = await (context.supabase as any).rpc(
+      "admin_listar_movimentacoes",
+    );
+    if (error) throw new Error(error.message);
+    return (data ?? []) as MovimentacaoDetalhada[];
+  });

@@ -7,6 +7,7 @@ import {
   listarUsuarios,
   definirAdmin,
   excluirUsuario,
+  listarMovimentacoes,
 } from "@/lib/gerenciamento.functions";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
@@ -21,6 +22,7 @@ import {
 } from "@/components/ui/alert-dialog";
 import {
   ShieldCheck, ShieldOff, Trash2, Users, ArrowLeft, Package, LogOut,
+  ArrowDownCircle, ArrowUpCircle, History,
 } from "lucide-react";
 import { toast } from "sonner";
 import { SiteFooter } from "@/components/site-footer";
@@ -36,6 +38,7 @@ function GerenciamentoPage() {
   const listar = useServerFn(listarUsuarios);
   const definir = useServerFn(definirAdmin);
   const excluir = useServerFn(excluirUsuario);
+  const listarMov = useServerFn(listarMovimentacoes);
 
   const { data: isAdmin, isLoading: verificandoAdmin } = useQuery({
     queryKey: ["is-admin"],
@@ -55,6 +58,16 @@ function GerenciamentoPage() {
   const { data: usuarios = [], isLoading, error } = useQuery({
     queryKey: ["usuarios"],
     queryFn: () => listar(),
+    enabled: isAdmin === true,
+  });
+
+  const {
+    data: movimentacoes = [],
+    isLoading: carregandoMov,
+    error: errorMov,
+  } = useQuery({
+    queryKey: ["movimentacoes-admin"],
+    queryFn: () => listarMov(),
     enabled: isAdmin === true,
   });
 
@@ -225,6 +238,101 @@ function GerenciamentoPage() {
                         </TableCell>
                       </TableRow>
                     ))}
+                  </TableBody>
+                </Table>
+              </div>
+            </CardContent>
+          </Card>
+        )}
+
+        {isAdmin && (
+          <Card className="rounded-2xl border-border shadow-[0_1px_2px_0_oklch(0.322_0.028_258/0.04),0_8px_24px_-12px_oklch(0.322_0.028_258/0.08)]">
+            <CardContent className="p-4 sm:p-6 space-y-4">
+              <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2">
+                <div className="min-w-0 flex items-start gap-3">
+                  <div className="mt-0.5 flex h-9 w-9 shrink-0 items-center justify-center rounded-lg bg-muted text-muted-foreground">
+                    <History className="h-4 w-4" />
+                  </div>
+                  <div className="min-w-0">
+                    <h2 className="font-display font-semibold tracking-tight">Auditoria de movimentações</h2>
+                    <p className="text-sm text-muted-foreground">
+                      Histórico completo de entradas e saídas, com data, hora e responsável.
+                    </p>
+                  </div>
+                </div>
+                <Badge variant="secondary" className="w-fit shrink-0 gap-1 rounded-full border border-border bg-muted px-2.5 py-0.5 text-[10px] font-semibold uppercase tracking-wider text-muted-foreground">
+                  <Package className="h-3 w-3" /> {movimentacoes.length} registro{movimentacoes.length === 1 ? "" : "s"}
+                </Badge>
+              </div>
+
+              <div className="overflow-x-auto rounded-xl border border-border">
+                <Table>
+                  <TableHeader className="bg-muted/40">
+                    <TableRow className="border-border hover:bg-transparent">
+                      <TableHead className="h-10 text-[11px] font-semibold uppercase tracking-wider text-muted-foreground">Data / Hora</TableHead>
+                      <TableHead className="h-10 text-[11px] font-semibold uppercase tracking-wider text-muted-foreground">Tipo</TableHead>
+                      <TableHead className="h-10 text-right text-[11px] font-semibold uppercase tracking-wider text-muted-foreground">Qtd.</TableHead>
+                      <TableHead className="h-10 text-[11px] font-semibold uppercase tracking-wider text-muted-foreground">Produto</TableHead>
+                      <TableHead className="h-10 text-[11px] font-semibold uppercase tracking-wider text-muted-foreground">Responsável</TableHead>
+                      <TableHead className="h-10 text-[11px] font-semibold uppercase tracking-wider text-muted-foreground">Observações</TableHead>
+                    </TableRow>
+                  </TableHeader>
+                  <TableBody>
+                    {carregandoMov && (
+                      <TableRow><TableCell colSpan={6} className="text-center text-muted-foreground py-8">Carregando movimentações…</TableCell></TableRow>
+                    )}
+                    {errorMov && (
+                      <TableRow><TableCell colSpan={6} className="text-center text-destructive py-8">{(errorMov as Error).message}</TableCell></TableRow>
+                    )}
+                    {!carregandoMov && !errorMov && movimentacoes.length === 0 && (
+                      <TableRow><TableCell colSpan={6} className="text-center text-muted-foreground py-8">Nenhuma movimentação registrada ainda.</TableCell></TableRow>
+                    )}
+                    {movimentacoes.map((m) => {
+                      const isEntrada = m.tipo === "entrada";
+                      const dt = new Date(m.created_at);
+                      const produtoLabel = [m.produto_categoria, m.produto_modelo].filter(Boolean).join(" • ");
+                      const detalhes = [m.produto_qualidade, m.produto_tier].filter(Boolean).join(" · ");
+                      return (
+                        <TableRow key={m.id} className="border-border transition-colors hover:bg-muted/40">
+                          <TableCell className="whitespace-nowrap text-sm tabular-nums">
+                            <div className="font-medium text-foreground">{dt.toLocaleDateString("pt-BR")}</div>
+                            <div className="text-[11px] text-muted-foreground">{dt.toLocaleTimeString("pt-BR", { hour: "2-digit", minute: "2-digit", second: "2-digit" })}</div>
+                          </TableCell>
+                          <TableCell>
+                            {isEntrada ? (
+                              <Badge className="gap-1 rounded-md bg-emerald-500/15 text-emerald-700 hover:bg-emerald-500/20 dark:text-emerald-300 text-[10px] font-semibold uppercase tracking-wide">
+                                <ArrowDownCircle className="h-3 w-3" /> Entrada
+                              </Badge>
+                            ) : (
+                              <Badge className="gap-1 rounded-md bg-rose-500/15 text-rose-700 hover:bg-rose-500/20 dark:text-rose-300 text-[10px] font-semibold uppercase tracking-wide">
+                                <ArrowUpCircle className="h-3 w-3" /> Saída
+                              </Badge>
+                            )}
+                          </TableCell>
+                          <TableCell className="text-right font-semibold tabular-nums">
+                            <span className={isEntrada ? "text-emerald-700 dark:text-emerald-300" : "text-rose-700 dark:text-rose-300"}>
+                              {isEntrada ? "+" : "−"}{m.quantidade}
+                            </span>
+                          </TableCell>
+                          <TableCell className="min-w-[220px]">
+                            <div className="text-sm font-medium text-foreground">
+                              {produtoLabel || <span className="text-muted-foreground">Produto removido</span>}
+                            </div>
+                            {detalhes && <div className="text-[11px] text-muted-foreground">{detalhes}</div>}
+                          </TableCell>
+                          <TableCell className="text-sm text-muted-foreground">
+                            {m.user_email || <span className="italic">desconhecido</span>}
+                          </TableCell>
+                          <TableCell className="max-w-[280px] text-sm text-muted-foreground">
+                            {m.observacoes ? (
+                              <span className="line-clamp-2" title={m.observacoes}>{m.observacoes}</span>
+                            ) : (
+                              <span className="text-muted-foreground/60">—</span>
+                            )}
+                          </TableCell>
+                        </TableRow>
+                      );
+                    })}
                   </TableBody>
                 </Table>
               </div>
