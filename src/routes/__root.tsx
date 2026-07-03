@@ -86,6 +86,10 @@ export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()(
       { property: "og:description", content: "Controle de estoque de telas e baterias da assistência técnica LH Import." },
       { property: "og:type", content: "website" },
       { name: "twitter:card", content: "summary_large_image" },
+      { name: "twitter:title", content: "Estoque LH Import" },
+      { name: "twitter:description", content: "Controle de estoque de telas e baterias da assistência técnica LH Import." },
+      { property: "og:image", content: "https://storage.googleapis.com/gpt-engineer-file-uploads/ihb6DqEZBDUmb4WdABCU5St5LKx2/social-images/social-1783046142317-Captura_de_Tela_2026-07-02_às_23.31.24.webp" },
+      { name: "twitter:image", content: "https://storage.googleapis.com/gpt-engineer-file-uploads/ihb6DqEZBDUmb4WdABCU5St5LKx2/social-images/social-1783046142317-Captura_de_Tela_2026-07-02_às_23.31.24.webp" },
     ],
     links: [
       {
