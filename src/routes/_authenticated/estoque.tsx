@@ -1,5 +1,5 @@
 import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
-import logo from "@/assets/logo.png";
+import logo from "@/assets/logo.webp";
 import { useMemo, useState } from "react";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
@@ -193,7 +193,7 @@ function EstoquePage() {
       <header className="border-b bg-background sticky top-0 z-10">
         <div className="mx-auto max-w-[1400px] flex items-center justify-between gap-4 px-4 py-3">
           <div className="flex items-center gap-2">
-            <img src={logo} alt="LH Import" className="h-10 w-10 rounded-lg object-cover" />
+            <img src={logo} alt="LH Import" width="40" height="40" loading="lazy" decoding="async" className="h-10 w-10 rounded-lg object-cover" />
             <div>
               <h1 className="font-semibold leading-tight">Estoque LH Import</h1>
               <p className="text-xs text-muted-foreground">Telas e baterias</p>

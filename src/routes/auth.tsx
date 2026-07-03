@@ -6,7 +6,7 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import logo from "@/assets/logo.png";
+import logo from "@/assets/logo.webp";
 import { toast } from "sonner";
 
 export const Route = createFileRoute("/auth")({
@@ -53,7 +53,7 @@ function AuthPage() {
     <div className="min-h-screen flex items-center justify-center bg-muted/30 px-4">
       <Card className="w-full max-w-md">
         <CardHeader className="text-center space-y-2">
-          <img src={logo} alt="LH Import" className="mx-auto h-16 w-16 rounded-xl object-cover" />
+          <img src={logo} alt="LH Import" width="64" height="64" fetchPriority="high" decoding="async" className="mx-auto h-16 w-16 rounded-xl object-cover" />
           <CardTitle className="text-2xl">Estoque LH Import</CardTitle>
           <CardDescription>Controle de telas e baterias</CardDescription>
         </CardHeader>
