@@ -164,7 +164,7 @@ function EstoquePage() {
     onSuccess: (_d, v) => {
       qc.invalidateQueries({ queryKey: ["produtos"] });
       qc.invalidateQueries({ queryKey: ["movimentacoes"] });
-      toast.success(v.tipo === "entrada" ? "Entrada registrada" : "Saída registrada");
+      toast.success(v.tipo === "entrada" ? "+1 no estoque — pronto para vender" : "Venda registrada — estoque atualizado");
     },
     onError: (e: Error) => toast.error(e.message),
   });
@@ -176,7 +176,7 @@ function EstoquePage() {
     },
     onSuccess: () => {
       qc.invalidateQueries({ queryKey: ["produtos"] });
-      toast.success("Peça removida");
+      toast.success("Peça removida do catálogo");
     },
     onError: (e: Error) => toast.error(e.message),
   });
@@ -461,7 +461,7 @@ function NovoProdutoDialog({ open, onOpenChange }: { open: boolean; onOpenChange
     },
     onSuccess: () => {
       qc.invalidateQueries({ queryKey: ["produtos"] });
-      toast.success("Peça cadastrada");
+      toast.success("Peça no ar — pronta para gerar receita");
       setForm(FORM_INICIAL);
       onOpenChange(false);
     },
@@ -475,8 +475,8 @@ function NovoProdutoDialog({ open, onOpenChange }: { open: boolean; onOpenChange
       </DialogTrigger>
       <DialogContent className="w-[calc(100vw-1.5rem)] max-w-2xl max-h-[90vh] overflow-y-auto">
         <DialogHeader>
-          <DialogTitle>Cadastrar nova peça</DialogTitle>
-          <DialogDescription>Preencha os dados. Só o modelo é obrigatório.</DialogDescription>
+          <DialogTitle>Nova peça, nova oportunidade de venda</DialogTitle>
+          <DialogDescription>Leva menos de 30 segundos. Só o modelo é obrigatório — o resto é bônus.</DialogDescription>
         </DialogHeader>
         <form
           onSubmit={(e) => { e.preventDefault(); criar.mutate(); }}
@@ -533,8 +533,8 @@ function NovoProdutoDialog({ open, onOpenChange }: { open: boolean; onOpenChange
             <Input type="number" min="0" value={form.estoque_inicial} onChange={(e) => setForm({ ...form, estoque_inicial: e.target.value })} />
           </Field>
           <DialogFooter className="sm:col-span-2 mt-2">
-            <Button type="button" variant="ghost" onClick={() => onOpenChange(false)}>Cancelar</Button>
-            <Button type="submit" disabled={criar.isPending}>Cadastrar</Button>
+            <Button type="button" variant="ghost" onClick={() => onOpenChange(false)}>Agora não</Button>
+            <Button type="submit" disabled={criar.isPending}>{criar.isPending ? "Salvando…" : "Cadastrar e liberar venda"}</Button>
           </DialogFooter>
         </form>
       </DialogContent>
@@ -571,8 +571,8 @@ function HistoricoDialog({ produto, onClose }: { produto: Produto | null; onClos
     <Dialog open={!!produto} onOpenChange={(o) => !o && onClose()}>
       <DialogContent className="w-[calc(100vw-1.5rem)] max-w-lg">
         <DialogHeader>
-          <DialogTitle>Histórico — {produto?.modelo}</DialogTitle>
-          <DialogDescription>Últimas 50 movimentações desta peça.</DialogDescription>
+          <DialogTitle>Tudo o que aconteceu com {produto?.modelo}</DialogTitle>
+          <DialogDescription>As 50 últimas movimentações — total rastreabilidade, zero achismo.</DialogDescription>
         </DialogHeader>
         <div className="max-h-[400px] overflow-y-auto border rounded-md">
           <Table>
@@ -585,8 +585,8 @@ function HistoricoDialog({ produto, onClose }: { produto: Produto | null; onClos
               </TableRow>
             </TableHeader>
             <TableBody>
-              {isLoading && <TableRow><TableCell colSpan={4} className="text-center py-4 text-muted-foreground">Carregando…</TableCell></TableRow>}
-              {!isLoading && movs.length === 0 && <TableRow><TableCell colSpan={4} className="text-center py-4 text-muted-foreground">Sem movimentações.</TableCell></TableRow>}
+              {isLoading && <TableRow><TableCell colSpan={4} className="text-center py-4 text-muted-foreground">Buscando o histórico…</TableCell></TableRow>}
+              {!isLoading && movs.length === 0 && <TableRow><TableCell colSpan={4} className="text-center py-4 text-muted-foreground">Ainda sem movimentações — registre a primeira entrada ou saída.</TableCell></TableRow>}
               {movs.map((m) => (
                 <TableRow key={m.id}>
                   <TableCell className="text-xs">{new Date(m.created_at).toLocaleString("pt-BR")}</TableCell>
