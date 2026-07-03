@@ -379,19 +379,76 @@ function EstoquePage() {
   );
 }
 
-function StatCard({ icon, label, value, tone }: { icon: React.ReactNode; label: string; value: number; tone?: "warn" }) {
+function BentoStats({ telas, baterias, alertas, totalPecas }: { telas: number; baterias: number; alertas: number; totalPecas: number }) {
+  const totalUnidades = telas + baterias;
+  const pctTelas = totalUnidades > 0 ? Math.round((telas / totalUnidades) * 100) : 0;
   return (
-    <Card>
-      <CardContent className="flex items-center gap-3 p-4">
-        <div className={`flex h-10 w-10 items-center justify-center rounded-lg ${tone === "warn" ? "bg-destructive/10 text-destructive" : "bg-primary/10 text-primary"}`}>
-          {icon}
-        </div>
-        <div>
-          <p className="text-sm text-muted-foreground">{label}</p>
-          <p className="text-2xl font-semibold leading-tight">{value}</p>
-        </div>
-      </CardContent>
-    </Card>
+    <div className="grid grid-cols-12 gap-3 sm:gap-4">
+      {/* Hero tile — Telas */}
+      <Card className="col-span-12 rounded-2xl border-border shadow-[0_1px_2px_0_oklch(0.322_0.028_258/0.04),0_8px_24px_-12px_oklch(0.322_0.028_258/0.08)] transition-shadow hover:shadow-[0_1px_2px_0_oklch(0.322_0.028_258/0.06),0_16px_40px_-16px_oklch(0.322_0.028_258/0.14)] md:col-span-6 lg:col-span-7">
+        <CardContent className="flex flex-col gap-6 p-6">
+          <div className="flex items-start justify-between gap-4">
+            <div className="min-w-0">
+              <p className="font-display text-[11px] font-semibold uppercase tracking-widest text-muted-foreground">Telas prontas para vender</p>
+              <h3 className="mt-2 font-display text-4xl font-semibold tracking-tight tabular-nums">{telas}</h3>
+            </div>
+            <div className="flex h-12 w-12 shrink-0 items-center justify-center rounded-xl bg-emerald-50 text-emerald-600 dark:bg-emerald-950/40 dark:text-emerald-400">
+              <Smartphone className="h-6 w-6" />
+            </div>
+          </div>
+          <div>
+            <div className="mb-2 flex items-center justify-between text-[11px] text-muted-foreground">
+              <span>Participação no estoque</span>
+              <span className="tabular-nums font-medium text-foreground">{pctTelas}%</span>
+            </div>
+            <div className="h-2 w-full overflow-hidden rounded-full bg-muted">
+              <div className="h-full rounded-full bg-primary transition-[width] duration-500" style={{ width: `${pctTelas}%` }} />
+            </div>
+          </div>
+        </CardContent>
+      </Card>
+
+      {/* Small tile — Baterias */}
+      <Card className="col-span-6 rounded-2xl border-border shadow-[0_1px_2px_0_oklch(0.322_0.028_258/0.04)] transition-shadow hover:shadow-[0_8px_24px_-12px_oklch(0.322_0.028_258/0.10)] md:col-span-3 lg:col-span-2">
+        <CardContent className="flex h-full flex-col justify-between gap-3 p-5">
+          <div>
+            <p className="font-display text-[11px] font-semibold uppercase tracking-widest text-muted-foreground">Baterias</p>
+            <h3 className="mt-2 font-display text-3xl font-semibold tracking-tight tabular-nums">{baterias}</h3>
+          </div>
+          <div className="flex items-center gap-1.5 text-[11px] text-muted-foreground">
+            <BatteryCharging className="h-3.5 w-3.5" /> {totalPecas} peça{totalPecas === 1 ? "" : "s"} no catálogo
+          </div>
+        </CardContent>
+      </Card>
+
+      {/* Dark tile — Vendas em risco */}
+      <Card className={`col-span-6 rounded-2xl border-transparent shadow-[0_1px_2px_0_oklch(0.322_0.028_258/0.06),0_12px_32px_-12px_oklch(0.322_0.028_258/0.30)] md:col-span-3 lg:col-span-3 ${alertas > 0 ? "bg-primary text-primary-foreground" : "bg-muted/60 text-foreground border-border"}`}>
+        <CardContent className="flex h-full flex-col justify-between gap-4 p-5">
+          <div>
+            <p className={`font-display text-[11px] font-semibold uppercase tracking-widest ${alertas > 0 ? "text-primary-foreground/70" : "text-muted-foreground"}`}>
+              {alertas > 0 ? "Vendas em risco" : "Tudo sob controle"}
+            </p>
+            <h3 className="mt-2 font-display text-3xl font-semibold tracking-tight tabular-nums">{alertas}</h3>
+          </div>
+          <div className={`flex items-center gap-2 text-[11px] ${alertas > 0 ? "text-primary-foreground/70" : "text-muted-foreground"}`}>
+            {alertas > 0 ? (
+              <>
+                <span className="relative flex h-2 w-2">
+                  <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-rose-400 opacity-75"></span>
+                  <span className="relative inline-flex h-2 w-2 rounded-full bg-rose-400"></span>
+                </span>
+                Ação necessária agora
+              </>
+            ) : (
+              <>
+                <span className="inline-flex h-2 w-2 rounded-full bg-emerald-500"></span>
+                Nenhum item abaixo do mínimo
+              </>
+            )}
+          </div>
+        </CardContent>
+      </Card>
+    </div>
   );
 }
 
