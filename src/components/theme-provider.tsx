@@ -87,5 +87,8 @@ export const themeInitScript = `(() => {
     var r = document.documentElement;
     if (d) r.classList.add('dark'); else r.classList.remove('dark');
     r.style.colorScheme = d ? 'dark' : 'light';
+    requestAnimationFrame(function () {
+      requestAnimationFrame(function () { r.classList.add('theme-ready'); });
+    });
   } catch (_) {}
 })();`;
