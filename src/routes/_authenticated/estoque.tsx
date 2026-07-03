@@ -24,11 +24,15 @@ import {
 } from "@/components/ui/alert-dialog";
 import {
   Plus, Minus, Search, Trash2, LogOut, Package, AlertTriangle, Smartphone, BatteryCharging, History,
-  ShieldCheck, Eye, Users,
+  ShieldCheck, Eye, Users, MessageCircle,
 } from "lucide-react";
 import { toast } from "sonner";
 import { SiteFooter } from "@/components/site-footer";
 import { ThemeToggle } from "@/components/theme-toggle";
+import { WhatsappSettingsDialog } from "@/components/whatsapp-settings-dialog";
+import {
+  getStoredWhatsappNumber, mensagemConsulta, openWhatsapp,
+} from "@/lib/whatsapp";
 
 export const Route = createFileRoute("/_authenticated/estoque")({
   component: EstoquePage,
