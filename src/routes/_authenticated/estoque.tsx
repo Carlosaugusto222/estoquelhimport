@@ -24,11 +24,15 @@ import {
 } from "@/components/ui/alert-dialog";
 import {
   Plus, Minus, Search, Trash2, LogOut, Package, AlertTriangle, Smartphone, BatteryCharging, History,
-  ShieldCheck, Eye, Users,
+  ShieldCheck, Eye, Users, MessageCircle,
 } from "lucide-react";
 import { toast } from "sonner";
 import { SiteFooter } from "@/components/site-footer";
 import { ThemeToggle } from "@/components/theme-toggle";
+import { WhatsappSettingsDialog } from "@/components/whatsapp-settings-dialog";
+import {
+  getStoredWhatsappNumber, mensagemConsulta, openWhatsapp,
+} from "@/lib/whatsapp";
 
 export const Route = createFileRoute("/_authenticated/estoque")({
   component: EstoquePage,
@@ -67,6 +71,17 @@ function EstoquePage() {
   const [busca, setBusca] = useState("");
   const [openNovo, setOpenNovo] = useState(false);
   const [historicoProduto, setHistoricoProduto] = useState<Produto | null>(null);
+  const [waSettingsOpen, setWaSettingsOpen] = useState(false);
+
+  function consultarNoWhatsapp(p: Produto) {
+    const numero = getStoredWhatsappNumber();
+    if (!numero) {
+      toast.info("Configure o número do WhatsApp da loja primeiro.");
+      setWaSettingsOpen(true);
+      return;
+    }
+    openWhatsapp(numero, mensagemConsulta(p));
+  }
 
   const { data: isAdmin = false } = useQuery({
     queryKey: ["is-admin"],
@@ -208,6 +223,17 @@ function EstoquePage() {
               <Badge variant="secondary" className="hidden gap-1 rounded-full border border-border bg-muted px-2.5 py-0.5 text-[10px] font-semibold uppercase tracking-wider text-muted-foreground sm:inline-flex"><Eye className="h-3 w-3" /> Visualização</Badge>
             )}
             <ThemeToggle />
+            <Button
+              variant="ghost"
+              size="sm"
+              onClick={() => setWaSettingsOpen(true)}
+              aria-label="Configurar WhatsApp"
+              title="Configurar WhatsApp da loja"
+              className="text-muted-foreground hover:text-foreground"
+            >
+              <MessageCircle className="h-4 w-4 sm:mr-1" />
+              <span className="hidden sm:inline">WhatsApp</span>
+            </Button>
             {isAdmin && (
               <Button asChild variant="ghost" size="sm" aria-label="Gerenciar usuários" className="text-muted-foreground hover:text-foreground">
                 <Link to="/gerenciamento"><Users className="h-4 w-4 sm:mr-1" /><span className="hidden sm:inline">Gerenciar</span></Link>
@@ -342,6 +368,15 @@ function EstoquePage() {
                             <Button size="icon" variant="ghost" title="Ver histórico" className="h-8 w-8 rounded-md text-muted-foreground hover:text-foreground" onClick={() => setHistoricoProduto(p)}>
                               <History className="h-4 w-4" />
                             </Button>
+                            <Button
+                              size="icon"
+                              variant="ghost"
+                              title="Consultar no WhatsApp"
+                              className="h-8 w-8 rounded-md text-emerald-600 hover:bg-emerald-500/10 hover:text-emerald-700 dark:text-emerald-400 dark:hover:text-emerald-300"
+                              onClick={() => consultarNoWhatsapp(p)}
+                            >
+                              <MessageCircle className="h-4 w-4" />
+                            </Button>
                             {isAdmin && (
                             <AlertDialog>
                               <AlertDialogTrigger asChild>
@@ -376,6 +411,7 @@ function EstoquePage() {
       </main>
 
       <HistoricoDialog produto={historicoProduto} onClose={() => setHistoricoProduto(null)} />
+      <WhatsappSettingsDialog open={waSettingsOpen} onOpenChange={setWaSettingsOpen} />
       <SiteFooter />
     </div>
   );
