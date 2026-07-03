@@ -51,13 +51,13 @@ function AuthPage() {
   }
 
   return (
-    <div className="min-h-screen flex flex-col bg-muted/30">
-      <div className="flex flex-1 items-center justify-center px-4 py-8">
-      <Card className="w-full max-w-md">
-        <CardHeader className="text-center space-y-2">
-          <img src={logo} alt="LH Import" width="64" height="64" fetchPriority="high" decoding="async" className="mx-auto h-16 w-16 rounded-xl object-cover" />
-          <CardTitle className="text-2xl">Estoque LH Import</CardTitle>
-          <CardDescription>Controle de telas e baterias</CardDescription>
+    <div className="min-h-screen flex flex-col bg-background">
+      <div className="flex flex-1 items-center justify-center px-4 py-10">
+      <Card className="w-full max-w-md rounded-2xl border-border shadow-[0_1px_2px_0_oklch(0.322_0.028_258/0.04),0_24px_48px_-24px_oklch(0.322_0.028_258/0.18)]">
+        <CardHeader className="text-center space-y-3 pt-8">
+          <img src={logo} alt="LH Import" width="64" height="64" fetchPriority="high" decoding="async" className="mx-auto h-16 w-16 rounded-2xl object-cover ring-1 ring-border/60 shadow-sm" />
+          <CardTitle className="font-display text-2xl tracking-tight">Estoque LH Import</CardTitle>
+          <CardDescription className="text-[13px]">Controle premium de telas e baterias</CardDescription>
         </CardHeader>
         <CardContent>
           <Tabs defaultValue="login">

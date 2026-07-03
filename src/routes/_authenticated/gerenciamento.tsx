@@ -84,40 +84,40 @@ function GerenciamentoPage() {
   }
 
   return (
-    <div className="min-h-screen bg-muted/30">
-      <header className="border-b bg-background sticky top-0 z-10">
-        <div className="mx-auto max-w-[1200px] grid grid-cols-[minmax(0,1fr)_auto] items-center gap-3 px-3 py-3 sm:px-4">
+    <div className="min-h-screen bg-background">
+      <header className="sticky top-0 z-10 border-b border-border/60 bg-background/80 backdrop-blur-md">
+        <div className="mx-auto max-w-[1200px] grid grid-cols-[minmax(0,1fr)_auto] items-center gap-3 px-4 py-3 sm:px-6 sm:h-16">
           <div className="flex min-w-0 items-center gap-2">
-            <img src={logo} alt="LH Import" width="40" height="40" loading="lazy" decoding="async" className="h-10 w-10 shrink-0 rounded-lg object-cover" />
+            <img src={logo} alt="LH Import" width="40" height="40" loading="lazy" decoding="async" className="h-9 w-9 shrink-0 rounded-lg object-cover ring-1 ring-border/60" />
             <div className="min-w-0">
-              <h1 className="truncate font-semibold leading-tight">Gerenciamento</h1>
-              <p className="truncate text-xs text-muted-foreground">Usuários e permissões</p>
+              <h1 className="truncate font-display text-[15px] font-semibold leading-tight tracking-tight">Gerenciamento</h1>
+              <p className="truncate text-[11px] text-muted-foreground">Usuários e permissões</p>
             </div>
           </div>
-          <div className="flex shrink-0 items-center gap-1 sm:gap-2">
-            <Button asChild variant="ghost" size="sm" aria-label="Voltar ao estoque">
+          <div className="flex shrink-0 items-center gap-1.5 sm:gap-2">
+            <Button asChild variant="ghost" size="sm" aria-label="Voltar ao estoque" className="text-muted-foreground hover:text-foreground">
               <Link to="/estoque"><ArrowLeft className="h-4 w-4 sm:mr-1" /><span className="hidden sm:inline">Estoque</span></Link>
             </Button>
-            <Button variant="ghost" size="sm" onClick={handleLogout} aria-label="Sair">
+            <Button variant="outline" size="sm" onClick={handleLogout} aria-label="Sair" className="rounded-lg">
               <LogOut className="h-4 w-4 sm:mr-1" /><span className="hidden sm:inline">Sair</span>
             </Button>
           </div>
         </div>
       </header>
 
-      <main className="mx-auto max-w-[1200px] px-3 py-4 space-y-4 sm:px-4 sm:py-6">
+      <main className="mx-auto max-w-[1200px] px-4 py-6 space-y-6 sm:px-6 sm:py-8">
         {verificandoAdmin && (
-          <Card><CardContent className="p-6 text-center text-muted-foreground">Verificando permissões…</CardContent></Card>
+          <Card className="rounded-2xl"><CardContent className="p-8 text-center text-muted-foreground">Verificando permissões…</CardContent></Card>
         )}
 
         {!verificandoAdmin && !isAdmin && (
-          <Card className="border-destructive/40">
+          <Card className="rounded-2xl border-destructive/30 bg-destructive/[0.03]">
             <CardContent className="p-6 flex items-start gap-3">
               <ShieldOff className="h-5 w-5 text-destructive mt-0.5" />
               <div>
-                <p className="font-medium">Acesso restrito</p>
+                <p className="font-display font-semibold tracking-tight">Acesso restrito</p>
                 <p className="text-sm text-muted-foreground">Somente administradores podem acessar esta tela.</p>
-                <Button asChild size="sm" variant="outline" className="mt-3">
+                <Button asChild size="sm" variant="outline" className="mt-3 rounded-lg">
                   <Link to="/estoque">Voltar para o estoque</Link>
                 </Button>
               </div>
@@ -126,29 +126,29 @@ function GerenciamentoPage() {
         )}
 
         {isAdmin && (
-          <Card>
-            <CardContent className="p-3 sm:p-4 space-y-3">
+          <Card className="rounded-2xl border-border shadow-[0_1px_2px_0_oklch(0.322_0.028_258/0.04),0_8px_24px_-12px_oklch(0.322_0.028_258/0.08)]">
+            <CardContent className="p-4 sm:p-6 space-y-4">
               <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2">
                 <div className="min-w-0">
-                  <h2 className="font-medium">Usuários do sistema</h2>
+                  <h2 className="font-display font-semibold tracking-tight">Usuários do sistema</h2>
                   <p className="text-sm text-muted-foreground">
                     Promova ou remova administradores. Somente administradores podem alterar o estoque.
                   </p>
                 </div>
-                <Badge variant="secondary" className="w-fit shrink-0 gap-1">
+                <Badge variant="secondary" className="w-fit shrink-0 gap-1 rounded-full border border-border bg-muted px-2.5 py-0.5 text-[10px] font-semibold uppercase tracking-wider text-muted-foreground">
                   <Package className="h-3 w-3" /> {usuarios.length} usuário{usuarios.length === 1 ? "" : "s"}
                 </Badge>
               </div>
 
-              <div className="overflow-x-auto border rounded-md">
+              <div className="overflow-x-auto rounded-xl border border-border">
                 <Table>
-                  <TableHeader>
-                    <TableRow>
-                      <TableHead>E-mail</TableHead>
-                      <TableHead>Papel</TableHead>
-                      <TableHead>Criado em</TableHead>
-                      <TableHead>Último acesso</TableHead>
-                      <TableHead className="text-right w-[260px]">Ações</TableHead>
+                  <TableHeader className="bg-muted/40">
+                    <TableRow className="border-border hover:bg-transparent">
+                      <TableHead className="h-10 text-[11px] font-semibold uppercase tracking-wider text-muted-foreground">E-mail</TableHead>
+                      <TableHead className="h-10 text-[11px] font-semibold uppercase tracking-wider text-muted-foreground">Papel</TableHead>
+                      <TableHead className="h-10 text-[11px] font-semibold uppercase tracking-wider text-muted-foreground">Criado em</TableHead>
+                      <TableHead className="h-10 text-[11px] font-semibold uppercase tracking-wider text-muted-foreground">Último acesso</TableHead>
+                      <TableHead className="h-10 w-[260px] text-right text-[11px] font-semibold uppercase tracking-wider text-muted-foreground">Ações</TableHead>
                     </TableRow>
                   </TableHeader>
                   <TableBody>
@@ -162,22 +162,22 @@ function GerenciamentoPage() {
                       <TableRow><TableCell colSpan={5} className="text-center text-muted-foreground py-8">Nenhum usuário encontrado.</TableCell></TableRow>
                     )}
                     {usuarios.map((u) => (
-                      <TableRow key={u.id}>
+                      <TableRow key={u.id} className="border-border transition-colors hover:bg-muted/40">
                         <TableCell className="font-medium">
                           {u.email || <span className="text-muted-foreground">sem e-mail</span>}
-                          {u.is_self && <Badge variant="outline" className="ml-2">Você</Badge>}
+                          {u.is_self && <Badge variant="outline" className="ml-2 rounded-md text-[10px] uppercase tracking-wide">Você</Badge>}
                         </TableCell>
                         <TableCell>
                           {u.is_admin ? (
-                            <Badge className="gap-1"><ShieldCheck className="h-3 w-3" /> Administrador</Badge>
+                            <Badge className="gap-1 rounded-md text-[10px] font-semibold uppercase tracking-wide"><ShieldCheck className="h-3 w-3" /> Administrador</Badge>
                           ) : (
-                            <Badge variant="secondary">Somente leitura</Badge>
+                            <Badge variant="secondary" className="rounded-md text-[10px] font-semibold uppercase tracking-wide">Somente leitura</Badge>
                           )}
                         </TableCell>
-                        <TableCell className="text-sm text-muted-foreground">
+                        <TableCell className="text-sm tabular-nums text-muted-foreground">
                           {new Date(u.created_at).toLocaleDateString("pt-BR")}
                         </TableCell>
-                        <TableCell className="text-sm text-muted-foreground">
+                        <TableCell className="text-sm tabular-nums text-muted-foreground">
                           {u.last_sign_in_at ? new Date(u.last_sign_in_at).toLocaleString("pt-BR") : "—"}
                         </TableCell>
                         <TableCell>
