@@ -195,15 +195,15 @@ function EstoquePage() {
           <div className="flex min-w-0 items-center gap-2">
             <img src={logo} alt="LH Import" width="40" height="40" loading="lazy" decoding="async" className="h-10 w-10 shrink-0 rounded-lg object-cover" />
             <div className="min-w-0">
-              <h1 className="truncate font-semibold leading-tight">Estoque LH Import</h1>
-              <p className="truncate text-xs text-muted-foreground">Telas e baterias</p>
+              <h1 className="truncate font-semibold leading-tight">Controle Total • LH Import</h1>
+              <p className="truncate text-xs text-muted-foreground">Nunca perca uma venda por falta de peça</p>
             </div>
           </div>
           <div className="flex shrink-0 items-center gap-1 sm:gap-2">
             {isAdmin ? (
-              <Badge className="hidden gap-1 sm:inline-flex"><ShieldCheck className="h-3 w-3" /> Administrador</Badge>
+              <Badge className="hidden gap-1 sm:inline-flex"><ShieldCheck className="h-3 w-3" /> Acesso total</Badge>
             ) : (
-              <Badge variant="secondary" className="hidden gap-1 sm:inline-flex"><Eye className="h-3 w-3" /> Somente leitura</Badge>
+              <Badge variant="secondary" className="hidden gap-1 sm:inline-flex"><Eye className="h-3 w-3" /> Modo visualização</Badge>
             )}
             {isAdmin && (
               <Button asChild variant="outline" size="sm" aria-label="Gerenciar usuários">
@@ -224,12 +224,12 @@ function EstoquePage() {
               <div className="flex items-start gap-3">
                 <ShieldCheck className="h-5 w-5 text-primary mt-0.5" />
                 <div>
-                  <p className="font-medium">Nenhum administrador cadastrado</p>
-                  <p className="text-sm text-muted-foreground">Como você é o primeiro usuário, pode se tornar o administrador do sistema.</p>
+                  <p className="font-medium">Assuma o comando do seu estoque</p>
+                  <p className="text-sm text-muted-foreground">Você é o primeiro por aqui. Torne-se administrador em 1 clique e comece a controlar tudo agora.</p>
                 </div>
               </div>
               <Button onClick={() => virarAdmin.mutate()} disabled={virarAdmin.isPending}>
-                Tornar-me administrador
+                Quero assumir o controle
               </Button>
             </CardContent>
           </Card>
@@ -239,15 +239,15 @@ function EstoquePage() {
           <Card className="border-muted-foreground/20 bg-muted/50">
             <CardContent className="p-3 flex items-center gap-2 text-sm text-muted-foreground">
               <Eye className="h-4 w-4" />
-              Você está no modo somente leitura. Peça a um administrador para alterar o estoque.
+              Você está apenas visualizando. Para movimentar o estoque, peça acesso ao administrador.
             </CardContent>
           </Card>
         )}
 
         <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
-          <StatCard icon={<Smartphone className="h-5 w-5" />} label="Telas em estoque" value={totais.telas} />
-          <StatCard icon={<BatteryCharging className="h-5 w-5" />} label="Baterias em estoque" value={totais.baterias} />
-          <StatCard icon={<AlertTriangle className="h-5 w-5" />} label="Peças em alerta" value={totais.alertas} tone={totais.alertas > 0 ? "warn" : undefined} />
+          <StatCard icon={<Smartphone className="h-5 w-5" />} label="Telas prontas para vender" value={totais.telas} />
+          <StatCard icon={<BatteryCharging className="h-5 w-5" />} label="Baterias prontas para vender" value={totais.baterias} />
+          <StatCard icon={<AlertTriangle className="h-5 w-5" />} label={totais.alertas > 0 ? "Vendas em risco agora" : "Tudo sob controle"} value={totais.alertas} tone={totais.alertas > 0 ? "warn" : undefined} />
         </div>
 
         <Card>
@@ -263,7 +263,7 @@ function EstoquePage() {
               <div className="relative flex-1">
                 <Search className="absolute left-2 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
                 <Input
-                  placeholder="Buscar modelo, qualidade, fornecedor, número de série…"
+                  placeholder="Encontre em segundos: modelo, qualidade, fornecedor ou nº de série"
                   value={busca}
                   onChange={(e) => setBusca(e.target.value)}
                   className="pl-8"
@@ -293,11 +293,11 @@ function EstoquePage() {
                 </TableHeader>
                 <TableBody>
                   {isLoading && (
-                    <TableRow><TableCell colSpan={13} className="text-center text-muted-foreground py-8">Carregando…</TableCell></TableRow>
+                    <TableRow><TableCell colSpan={13} className="text-center text-muted-foreground py-8">Preparando seu estoque…</TableCell></TableRow>
                   )}
                   {!isLoading && produtosFiltrados.length === 0 && (
                     <TableRow><TableCell colSpan={13} className="text-center text-muted-foreground py-8">
-                      Nenhuma peça. Clique em <b>Nova peça</b> para começar.
+                      Seu estoque está vazio — e cada dia sem cadastro é uma venda que pode escapar. Comece agora em <b>Nova peça</b>.
                     </TableCell></TableRow>
                   )}
                   {produtosFiltrados.map((p) => {
