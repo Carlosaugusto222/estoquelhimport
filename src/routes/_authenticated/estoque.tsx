@@ -411,6 +411,7 @@ function EstoquePage() {
       </main>
 
       <HistoricoDialog produto={historicoProduto} onClose={() => setHistoricoProduto(null)} />
+      <WhatsappSettingsDialog open={waSettingsOpen} onOpenChange={setWaSettingsOpen} />
       <SiteFooter />
     </div>
   );
