@@ -1,4 +1,4 @@
-import { createFileRoute, useNavigate } from "@tanstack/react-router";
+import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
 import { useMemo, useState } from "react";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
@@ -23,7 +23,7 @@ import {
 } from "@/components/ui/alert-dialog";
 import {
   Plus, Minus, Search, Trash2, LogOut, Package, AlertTriangle, Smartphone, BatteryCharging, History,
-  ShieldCheck, Eye,
+  ShieldCheck, Eye, Users,
 } from "lucide-react";
 import { toast } from "sonner";
 
@@ -205,6 +205,11 @@ function EstoquePage() {
               <Badge className="gap-1"><ShieldCheck className="h-3 w-3" /> Administrador</Badge>
             ) : (
               <Badge variant="secondary" className="gap-1"><Eye className="h-3 w-3" /> Somente leitura</Badge>
+            )}
+            {isAdmin && (
+              <Button asChild variant="outline" size="sm">
+                <Link to="/gerenciamento"><Users className="h-4 w-4 mr-1" /> Gerenciar</Link>
+              </Button>
             )}
             <Button variant="ghost" size="sm" onClick={handleLogout}>
               <LogOut className="h-4 w-4 mr-1" /> Sair
