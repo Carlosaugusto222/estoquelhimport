@@ -7,6 +7,7 @@ import {
   listarUsuarios,
   definirAdmin,
   excluirUsuario,
+  listarMovimentacoes,
 } from "@/lib/gerenciamento.functions";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
@@ -21,6 +22,7 @@ import {
 } from "@/components/ui/alert-dialog";
 import {
   ShieldCheck, ShieldOff, Trash2, Users, ArrowLeft, Package, LogOut,
+  ArrowDownCircle, ArrowUpCircle, History,
 } from "lucide-react";
 import { toast } from "sonner";
 import { SiteFooter } from "@/components/site-footer";
@@ -36,6 +38,7 @@ function GerenciamentoPage() {
   const listar = useServerFn(listarUsuarios);
   const definir = useServerFn(definirAdmin);
   const excluir = useServerFn(excluirUsuario);
+  const listarMov = useServerFn(listarMovimentacoes);
 
   const { data: isAdmin, isLoading: verificandoAdmin } = useQuery({
     queryKey: ["is-admin"],
@@ -55,6 +58,16 @@ function GerenciamentoPage() {
   const { data: usuarios = [], isLoading, error } = useQuery({
     queryKey: ["usuarios"],
     queryFn: () => listar(),
+    enabled: isAdmin === true,
+  });
+
+  const {
+    data: movimentacoes = [],
+    isLoading: carregandoMov,
+    error: errorMov,
+  } = useQuery({
+    queryKey: ["movimentacoes-admin"],
+    queryFn: () => listarMov(),
     enabled: isAdmin === true,
   });
 
