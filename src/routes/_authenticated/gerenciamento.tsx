@@ -162,22 +162,22 @@ function GerenciamentoPage() {
                       <TableRow><TableCell colSpan={5} className="text-center text-muted-foreground py-8">Nenhum usuário encontrado.</TableCell></TableRow>
                     )}
                     {usuarios.map((u) => (
-                      <TableRow key={u.id}>
+                      <TableRow key={u.id} className="border-border transition-colors hover:bg-muted/40">
                         <TableCell className="font-medium">
                           {u.email || <span className="text-muted-foreground">sem e-mail</span>}
-                          {u.is_self && <Badge variant="outline" className="ml-2">Você</Badge>}
+                          {u.is_self && <Badge variant="outline" className="ml-2 rounded-md text-[10px] uppercase tracking-wide">Você</Badge>}
                         </TableCell>
                         <TableCell>
                           {u.is_admin ? (
-                            <Badge className="gap-1"><ShieldCheck className="h-3 w-3" /> Administrador</Badge>
+                            <Badge className="gap-1 rounded-md text-[10px] font-semibold uppercase tracking-wide"><ShieldCheck className="h-3 w-3" /> Administrador</Badge>
                           ) : (
-                            <Badge variant="secondary">Somente leitura</Badge>
+                            <Badge variant="secondary" className="rounded-md text-[10px] font-semibold uppercase tracking-wide">Somente leitura</Badge>
                           )}
                         </TableCell>
-                        <TableCell className="text-sm text-muted-foreground">
+                        <TableCell className="text-sm tabular-nums text-muted-foreground">
                           {new Date(u.created_at).toLocaleDateString("pt-BR")}
                         </TableCell>
-                        <TableCell className="text-sm text-muted-foreground">
+                        <TableCell className="text-sm tabular-nums text-muted-foreground">
                           {u.last_sign_in_at ? new Date(u.last_sign_in_at).toLocaleString("pt-BR") : "—"}
                         </TableCell>
                         <TableCell>
