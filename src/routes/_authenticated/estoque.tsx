@@ -190,46 +190,46 @@ function EstoquePage() {
   }
 
   return (
-    <div className="min-h-screen bg-muted/30">
-      <header className="border-b bg-background sticky top-0 z-10">
-        <div className="mx-auto max-w-[1400px] grid grid-cols-[minmax(0,1fr)_auto] items-center gap-3 px-3 py-3 sm:px-4">
+    <div className="min-h-screen bg-background">
+      <header className="sticky top-0 z-10 border-b border-border/60 bg-background/80 backdrop-blur-md">
+        <div className="mx-auto max-w-[1400px] grid grid-cols-[minmax(0,1fr)_auto] items-center gap-3 px-4 py-3 sm:px-6 sm:h-16">
           <div className="flex min-w-0 items-center gap-2">
-            <img src={logo} alt="LH Import" width="40" height="40" loading="lazy" decoding="async" className="h-10 w-10 shrink-0 rounded-lg object-cover" />
+            <img src={logo} alt="LH Import" width="40" height="40" loading="lazy" decoding="async" className="h-9 w-9 shrink-0 rounded-lg object-cover ring-1 ring-border/60" />
             <div className="min-w-0">
-              <h1 className="truncate font-semibold leading-tight">Controle Total • LH Import</h1>
-              <p className="truncate text-xs text-muted-foreground">Nunca perca uma venda por falta de peça</p>
+              <h1 className="truncate font-display text-[15px] font-semibold leading-tight tracking-tight">Controle Total <span className="text-muted-foreground">• LH Import</span></h1>
+              <p className="truncate text-[11px] text-muted-foreground">Nunca perca uma venda por falta de peça</p>
             </div>
           </div>
-          <div className="flex shrink-0 items-center gap-1 sm:gap-2">
+          <div className="flex shrink-0 items-center gap-1.5 sm:gap-2">
             {isAdmin ? (
-              <Badge className="hidden gap-1 sm:inline-flex"><ShieldCheck className="h-3 w-3" /> Acesso total</Badge>
+              <Badge className="hidden gap-1 rounded-full border border-border bg-muted px-2.5 py-0.5 text-[10px] font-semibold uppercase tracking-wider text-muted-foreground sm:inline-flex" variant="secondary"><ShieldCheck className="h-3 w-3" /> Acesso total</Badge>
             ) : (
-              <Badge variant="secondary" className="hidden gap-1 sm:inline-flex"><Eye className="h-3 w-3" /> Modo visualização</Badge>
+              <Badge variant="secondary" className="hidden gap-1 rounded-full border border-border bg-muted px-2.5 py-0.5 text-[10px] font-semibold uppercase tracking-wider text-muted-foreground sm:inline-flex"><Eye className="h-3 w-3" /> Visualização</Badge>
             )}
             {isAdmin && (
-              <Button asChild variant="outline" size="sm" aria-label="Gerenciar usuários">
+              <Button asChild variant="ghost" size="sm" aria-label="Gerenciar usuários" className="text-muted-foreground hover:text-foreground">
                 <Link to="/gerenciamento"><Users className="h-4 w-4 sm:mr-1" /><span className="hidden sm:inline">Gerenciar</span></Link>
               </Button>
             )}
-            <Button variant="ghost" size="sm" onClick={handleLogout} aria-label="Sair">
+            <Button variant="outline" size="sm" onClick={handleLogout} aria-label="Sair" className="rounded-lg">
               <LogOut className="h-4 w-4 sm:mr-1" /><span className="hidden sm:inline">Sair</span>
             </Button>
           </div>
         </div>
       </header>
 
-      <main className="mx-auto max-w-[1400px] px-3 py-4 space-y-4 sm:px-4 sm:py-6">
+      <main className="mx-auto max-w-[1400px] px-4 py-6 space-y-6 sm:px-6 sm:py-8">
         {!existeAdmin && !isAdmin && (
-          <Card className="border-primary/40 bg-primary/5">
-            <CardContent className="p-4 flex flex-col sm:flex-row sm:items-center gap-3 justify-between">
+          <Card className="rounded-2xl border-primary/20 bg-primary/[0.03] shadow-none">
+            <CardContent className="p-5 flex flex-col sm:flex-row sm:items-center gap-3 justify-between">
               <div className="flex items-start gap-3">
                 <ShieldCheck className="h-5 w-5 text-primary mt-0.5" />
                 <div>
-                  <p className="font-medium">Assuma o comando do seu estoque</p>
+                  <p className="font-display font-semibold tracking-tight">Assuma o comando do seu estoque</p>
                   <p className="text-sm text-muted-foreground">Você é o primeiro por aqui. Torne-se administrador em 1 clique e comece a controlar tudo agora.</p>
                 </div>
               </div>
-              <Button onClick={() => virarAdmin.mutate()} disabled={virarAdmin.isPending}>
+              <Button onClick={() => virarAdmin.mutate()} disabled={virarAdmin.isPending} className="rounded-lg">
                 Quero assumir o controle
               </Button>
             </CardContent>
@@ -237,7 +237,7 @@ function EstoquePage() {
         )}
 
         {existeAdmin && !isAdmin && (
-          <Card className="border-muted-foreground/20 bg-muted/50">
+          <Card className="rounded-2xl border-border bg-muted/40 shadow-none">
             <CardContent className="p-3 flex items-center gap-2 text-sm text-muted-foreground">
               <Eye className="h-4 w-4" />
               Você está apenas visualizando. Para movimentar o estoque, peça acesso ao administrador.
@@ -245,17 +245,13 @@ function EstoquePage() {
           </Card>
         )}
 
-        <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
-          <StatCard icon={<Smartphone className="h-5 w-5" />} label="Telas prontas para vender" value={totais.telas} />
-          <StatCard icon={<BatteryCharging className="h-5 w-5" />} label="Baterias prontas para vender" value={totais.baterias} />
-          <StatCard icon={<AlertTriangle className="h-5 w-5" />} label={totais.alertas > 0 ? "Vendas em risco agora" : "Tudo sob controle"} value={totais.alertas} tone={totais.alertas > 0 ? "warn" : undefined} />
-        </div>
+        <BentoStats telas={totais.telas} baterias={totais.baterias} alertas={totais.alertas} totalPecas={produtos.length} />
 
-        <Card>
-          <CardContent className="p-3 sm:p-4 space-y-3">
+        <Card className="rounded-2xl border-border shadow-[0_1px_2px_0_oklch(0.322_0.028_258/0.04),0_8px_24px_-12px_oklch(0.322_0.028_258/0.08)]">
+          <CardContent className="p-3 sm:p-5 space-y-4">
             <div className="flex flex-col md:flex-row md:items-center gap-3">
               <Tabs value={filtro} onValueChange={(v) => setFiltro(v as typeof filtro)} className="w-full md:w-auto">
-                <TabsList className="w-full md:w-auto">
+                <TabsList className="w-full rounded-lg bg-muted p-1 md:w-auto">
                   <TabsTrigger value="todos">Todos</TabsTrigger>
                   <TabsTrigger value="tela">Telas</TabsTrigger>
                   <TabsTrigger value="bateria">Baterias</TabsTrigger>
@@ -267,29 +263,29 @@ function EstoquePage() {
                   placeholder="Encontre em segundos: modelo, qualidade, fornecedor ou nº de série"
                   value={busca}
                   onChange={(e) => setBusca(e.target.value)}
-                  className="pl-8"
+                  className="pl-8 rounded-lg bg-muted/40 border-border focus-visible:ring-primary/20"
                 />
               </div>
               {isAdmin && <NovoProdutoDialog open={openNovo} onOpenChange={setOpenNovo} />}
             </div>
 
-            <div className="overflow-x-auto border rounded-md">
+            <div className="overflow-x-auto rounded-xl border border-border">
               <Table>
-                <TableHeader>
-                  <TableRow>
-                    <TableHead>Categoria</TableHead>
-                    <TableHead>Modelo</TableHead>
-                    <TableHead>Qualidade</TableHead>
-                    <TableHead>Tier</TableHead>
-                    <TableHead>Fornecedor</TableHead>
-                    <TableHead>Compra</TableHead>
-                    <TableHead>Garantia</TableHead>
-                    <TableHead>Nº série</TableHead>
-                    <TableHead className="text-right">Custo</TableHead>
-                    <TableHead className="text-right">Venda</TableHead>
-                    <TableHead className="text-center">Mínimo</TableHead>
-                    <TableHead className="text-center">Estoque</TableHead>
-                    <TableHead className="text-center w-[180px]">{isAdmin ? "Ações" : "Histórico"}</TableHead>
+                <TableHeader className="bg-muted/40">
+                  <TableRow className="border-border hover:bg-transparent">
+                    <TableHead className="h-10 text-[11px] font-semibold uppercase tracking-wider text-muted-foreground">Categoria</TableHead>
+                    <TableHead className="h-10 text-[11px] font-semibold uppercase tracking-wider text-muted-foreground">Modelo</TableHead>
+                    <TableHead className="h-10 text-[11px] font-semibold uppercase tracking-wider text-muted-foreground">Qualidade</TableHead>
+                    <TableHead className="h-10 text-[11px] font-semibold uppercase tracking-wider text-muted-foreground">Tier</TableHead>
+                    <TableHead className="h-10 text-[11px] font-semibold uppercase tracking-wider text-muted-foreground">Fornecedor</TableHead>
+                    <TableHead className="h-10 text-[11px] font-semibold uppercase tracking-wider text-muted-foreground">Compra</TableHead>
+                    <TableHead className="h-10 text-[11px] font-semibold uppercase tracking-wider text-muted-foreground">Garantia</TableHead>
+                    <TableHead className="h-10 text-[11px] font-semibold uppercase tracking-wider text-muted-foreground">Nº série</TableHead>
+                    <TableHead className="h-10 text-right text-[11px] font-semibold uppercase tracking-wider text-muted-foreground">Custo</TableHead>
+                    <TableHead className="h-10 text-right text-[11px] font-semibold uppercase tracking-wider text-muted-foreground">Venda</TableHead>
+                    <TableHead className="h-10 text-center text-[11px] font-semibold uppercase tracking-wider text-muted-foreground">Mínimo</TableHead>
+                    <TableHead className="h-10 text-center text-[11px] font-semibold uppercase tracking-wider text-muted-foreground">Estoque</TableHead>
+                    <TableHead className="h-10 w-[180px] text-center text-[11px] font-semibold uppercase tracking-wider text-muted-foreground">{isAdmin ? "Ações" : "Histórico"}</TableHead>
                   </TableRow>
                 </TableHeader>
                 <TableBody>
@@ -304,24 +300,24 @@ function EstoquePage() {
                   {produtosFiltrados.map((p) => {
                     const baixo = p.estoque_atual <= p.estoque_minimo;
                     return (
-                      <TableRow key={p.id} className={baixo ? "bg-destructive/5" : undefined}>
+                      <TableRow key={p.id} className={`border-border transition-colors ${baixo ? "bg-destructive/[0.04] hover:bg-destructive/[0.06]" : "hover:bg-muted/40"}`}>
                         <TableCell>
-                          <Badge variant={p.categoria === "tela" ? "default" : "secondary"}>
+                          <Badge variant={p.categoria === "tela" ? "default" : "secondary"} className="rounded-md text-[10px] font-semibold uppercase tracking-wide">
                             {p.categoria === "tela" ? "Tela" : "Bateria"}
                           </Badge>
                         </TableCell>
                         <TableCell className="font-medium">{p.modelo}</TableCell>
                         <TableCell>{p.qualidade ?? "—"}</TableCell>
-                        <TableCell>{p.tier ? <Badge variant="outline">{p.tier}</Badge> : "—"}</TableCell>
+                        <TableCell>{p.tier ? <Badge variant="outline" className="rounded-md text-[10px] uppercase tracking-wide">{p.tier}</Badge> : "—"}</TableCell>
                         <TableCell>{p.fornecedor ?? "—"}</TableCell>
-                        <TableCell>{p.data_compra ? new Date(p.data_compra).toLocaleDateString("pt-BR") : "—"}</TableCell>
+                        <TableCell className="tabular-nums text-muted-foreground">{p.data_compra ? new Date(p.data_compra).toLocaleDateString("pt-BR") : "—"}</TableCell>
                         <TableCell>{p.tem_garantia ? "Sim" : "Não"}</TableCell>
                         <TableCell className="font-mono text-xs">{p.numero_serie ?? "—"}</TableCell>
-                        <TableCell className="text-right">{fmtMoney(p.preco_custo)}</TableCell>
-                        <TableCell className="text-right">{fmtMoney(p.preco_venda)}</TableCell>
-                        <TableCell className="text-center text-muted-foreground">{p.estoque_minimo}</TableCell>
+                        <TableCell className="text-right tabular-nums text-muted-foreground">{fmtMoney(p.preco_custo)}</TableCell>
+                        <TableCell className="text-right tabular-nums font-medium">{fmtMoney(p.preco_venda)}</TableCell>
+                        <TableCell className="text-center tabular-nums text-muted-foreground">{p.estoque_minimo}</TableCell>
                         <TableCell className="text-center">
-                          <span className={`inline-flex min-w-[2rem] justify-center rounded-md px-2 py-0.5 font-semibold ${baixo ? "bg-destructive text-destructive-foreground" : "bg-muted"}`}>
+                          <span className={`inline-flex min-w-[2.25rem] justify-center rounded-md px-2 py-0.5 text-sm font-semibold tabular-nums ${baixo ? "bg-destructive text-destructive-foreground" : "bg-muted text-foreground"}`}>
                             {p.estoque_atual}
                           </span>
                         </TableCell>
@@ -329,25 +325,25 @@ function EstoquePage() {
                           <div className="flex items-center justify-center gap-1">
                             {isAdmin && (
                               <>
-                                <Button size="icon" variant="outline" title="Registrar saída"
+                                <Button size="icon" variant="outline" title="Registrar saída" className="h-8 w-8 rounded-md"
                                   disabled={movMutation.isPending || p.estoque_atual <= 0}
                                   onClick={() => movMutation.mutate({ produto_id: p.id, tipo: "saida", quantidade: 1 })}>
                                   <Minus className="h-4 w-4" />
                                 </Button>
-                                <Button size="icon" variant="outline" title="Registrar entrada"
+                                <Button size="icon" variant="outline" title="Registrar entrada" className="h-8 w-8 rounded-md"
                                   disabled={movMutation.isPending}
                                   onClick={() => movMutation.mutate({ produto_id: p.id, tipo: "entrada", quantidade: 1 })}>
                                   <Plus className="h-4 w-4" />
                                 </Button>
                               </>
                             )}
-                            <Button size="icon" variant="ghost" title="Ver histórico" onClick={() => setHistoricoProduto(p)}>
+                            <Button size="icon" variant="ghost" title="Ver histórico" className="h-8 w-8 rounded-md text-muted-foreground hover:text-foreground" onClick={() => setHistoricoProduto(p)}>
                               <History className="h-4 w-4" />
                             </Button>
                             {isAdmin && (
                             <AlertDialog>
                               <AlertDialogTrigger asChild>
-                                <Button size="icon" variant="ghost" title="Excluir peça">
+                                <Button size="icon" variant="ghost" title="Excluir peça" className="h-8 w-8 rounded-md">
                                   <Trash2 className="h-4 w-4 text-destructive" />
                                 </Button>
                               </AlertDialogTrigger>
