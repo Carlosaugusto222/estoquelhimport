@@ -24,6 +24,7 @@ import {
 } from "lucide-react";
 import { toast } from "sonner";
 import { SiteFooter } from "@/components/site-footer";
+import { ThemeToggle } from "@/components/theme-toggle";
 
 export const Route = createFileRoute("/_authenticated/gerenciamento")({
   component: GerenciamentoPage,
@@ -95,6 +96,7 @@ function GerenciamentoPage() {
             </div>
           </div>
           <div className="flex shrink-0 items-center gap-1.5 sm:gap-2">
+            <ThemeToggle />
             <Button asChild variant="ghost" size="sm" aria-label="Voltar ao estoque" className="text-muted-foreground hover:text-foreground">
               <Link to="/estoque"><ArrowLeft className="h-4 w-4 sm:mr-1" /><span className="hidden sm:inline">Estoque</span></Link>
             </Button>

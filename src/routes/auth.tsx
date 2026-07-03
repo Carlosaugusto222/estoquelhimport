@@ -9,6 +9,7 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import logo from "@/assets/logo.webp";
 import { toast } from "sonner";
 import { SiteFooter } from "@/components/site-footer";
+import { ThemeToggle } from "@/components/theme-toggle";
 
 export const Route = createFileRoute("/auth")({
   ssr: false,
@@ -52,6 +53,9 @@ function AuthPage() {
 
   return (
     <div className="min-h-screen flex flex-col bg-background">
+      <div className="absolute right-4 top-4 z-10">
+        <ThemeToggle />
+      </div>
       <div className="flex flex-1 items-center justify-center px-4 py-10">
       <Card className="w-full max-w-md rounded-2xl border-border shadow-[0_1px_2px_0_oklch(0.322_0.028_258/0.04),0_24px_48px_-24px_oklch(0.322_0.028_258/0.18)]">
         <CardHeader className="text-center space-y-3 pt-8">

@@ -28,6 +28,7 @@ import {
 } from "lucide-react";
 import { toast } from "sonner";
 import { SiteFooter } from "@/components/site-footer";
+import { ThemeToggle } from "@/components/theme-toggle";
 
 export const Route = createFileRoute("/_authenticated/estoque")({
   component: EstoquePage,
@@ -206,6 +207,7 @@ function EstoquePage() {
             ) : (
               <Badge variant="secondary" className="hidden gap-1 rounded-full border border-border bg-muted px-2.5 py-0.5 text-[10px] font-semibold uppercase tracking-wider text-muted-foreground sm:inline-flex"><Eye className="h-3 w-3" /> Visualização</Badge>
             )}
+            <ThemeToggle />
             {isAdmin && (
               <Button asChild variant="ghost" size="sm" aria-label="Gerenciar usuários" className="text-muted-foreground hover:text-foreground">
                 <Link to="/gerenciamento"><Users className="h-4 w-4 sm:mr-1" /><span className="hidden sm:inline">Gerenciar</span></Link>
