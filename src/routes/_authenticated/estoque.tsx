@@ -23,6 +23,7 @@ import {
 } from "@/components/ui/alert-dialog";
 import {
   Plus, Minus, Search, Trash2, LogOut, Package, AlertTriangle, Smartphone, BatteryCharging, History,
+  ShieldCheck, Eye,
 } from "lucide-react";
 import { toast } from "sonner";
 
@@ -63,6 +64,51 @@ function EstoquePage() {
   const [busca, setBusca] = useState("");
   const [openNovo, setOpenNovo] = useState(false);
   const [historicoProduto, setHistoricoProduto] = useState<Produto | null>(null);
+
+  const { data: isAdmin = false } = useQuery({
+    queryKey: ["is-admin"],
+    queryFn: async () => {
+      const { data: userData } = await supabase.auth.getUser();
+      if (!userData.user) return false;
+      const { data, error } = await supabase
+        .from("user_roles")
+        .select("role")
+        .eq("user_id", userData.user.id)
+        .eq("role", "admin")
+        .maybeSingle();
+      if (error) return false;
+      return !!data;
+    },
+  });
+
+  const { data: existeAdmin = true } = useQuery({
+    queryKey: ["existe-admin"],
+    queryFn: async () => {
+      const { count, error } = await supabase
+        .from("user_roles")
+        .select("id", { count: "exact", head: true })
+        .eq("role", "admin");
+      if (error) return true;
+      return (count ?? 0) > 0;
+    },
+  });
+
+  const virarAdmin = useMutation({
+    mutationFn: async () => {
+      const { data: userData } = await supabase.auth.getUser();
+      if (!userData.user) throw new Error("Sem sessão");
+      const { error } = await supabase
+        .from("user_roles")
+        .insert({ user_id: userData.user.id, role: "admin" });
+      if (error) throw error;
+    },
+    onSuccess: () => {
+      qc.invalidateQueries({ queryKey: ["is-admin"] });
+      qc.invalidateQueries({ queryKey: ["existe-admin"] });
+      toast.success("Você agora é o administrador!");
+    },
+    onError: (e: Error) => toast.error(e.message),
+  });
 
   const { data: produtos = [], isLoading } = useQuery({
     queryKey: ["produtos"],
@@ -154,13 +200,46 @@ function EstoquePage() {
               <p className="text-xs text-muted-foreground">Telas e baterias</p>
             </div>
           </div>
-          <Button variant="ghost" size="sm" onClick={handleLogout}>
-            <LogOut className="h-4 w-4 mr-1" /> Sair
-          </Button>
+          <div className="flex items-center gap-2">
+            {isAdmin ? (
+              <Badge className="gap-1"><ShieldCheck className="h-3 w-3" /> Administrador</Badge>
+            ) : (
+              <Badge variant="secondary" className="gap-1"><Eye className="h-3 w-3" /> Somente leitura</Badge>
+            )}
+            <Button variant="ghost" size="sm" onClick={handleLogout}>
+              <LogOut className="h-4 w-4 mr-1" /> Sair
+            </Button>
+          </div>
         </div>
       </header>
 
       <main className="mx-auto max-w-[1400px] px-4 py-6 space-y-4">
+        {!existeAdmin && !isAdmin && (
+          <Card className="border-primary/40 bg-primary/5">
+            <CardContent className="p-4 flex flex-col sm:flex-row sm:items-center gap-3 justify-between">
+              <div className="flex items-start gap-3">
+                <ShieldCheck className="h-5 w-5 text-primary mt-0.5" />
+                <div>
+                  <p className="font-medium">Nenhum administrador cadastrado</p>
+                  <p className="text-sm text-muted-foreground">Como você é o primeiro usuário, pode se tornar o administrador do sistema.</p>
+                </div>
+              </div>
+              <Button onClick={() => virarAdmin.mutate()} disabled={virarAdmin.isPending}>
+                Tornar-me administrador
+              </Button>
+            </CardContent>
+          </Card>
+        )}
+
+        {existeAdmin && !isAdmin && (
+          <Card className="border-muted-foreground/20 bg-muted/50">
+            <CardContent className="p-3 flex items-center gap-2 text-sm text-muted-foreground">
+              <Eye className="h-4 w-4" />
+              Você está no modo somente leitura. Peça a um administrador para alterar o estoque.
+            </CardContent>
+          </Card>
+        )}
+
         <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
           <StatCard icon={<Smartphone className="h-5 w-5" />} label="Telas em estoque" value={totais.telas} />
           <StatCard icon={<BatteryCharging className="h-5 w-5" />} label="Baterias em estoque" value={totais.baterias} />
@@ -186,7 +265,7 @@ function EstoquePage() {
                   className="pl-8"
                 />
               </div>
-              <NovoProdutoDialog open={openNovo} onOpenChange={setOpenNovo} />
+              {isAdmin && <NovoProdutoDialog open={openNovo} onOpenChange={setOpenNovo} />}
             </div>
 
             <div className="overflow-x-auto border rounded-md">
@@ -205,7 +284,7 @@ function EstoquePage() {
                     <TableHead className="text-right">Venda</TableHead>
                     <TableHead className="text-center">Mínimo</TableHead>
                     <TableHead className="text-center">Estoque</TableHead>
-                    <TableHead className="text-center w-[180px]">Ações</TableHead>
+                    <TableHead className="text-center w-[180px]">{isAdmin ? "Ações" : "Histórico"}</TableHead>
                   </TableRow>
                 </TableHeader>
                 <TableBody>
@@ -243,19 +322,24 @@ function EstoquePage() {
                         </TableCell>
                         <TableCell>
                           <div className="flex items-center justify-center gap-1">
-                            <Button size="icon" variant="outline" title="Registrar saída"
-                              disabled={movMutation.isPending || p.estoque_atual <= 0}
-                              onClick={() => movMutation.mutate({ produto_id: p.id, tipo: "saida", quantidade: 1 })}>
-                              <Minus className="h-4 w-4" />
-                            </Button>
-                            <Button size="icon" variant="outline" title="Registrar entrada"
-                              disabled={movMutation.isPending}
-                              onClick={() => movMutation.mutate({ produto_id: p.id, tipo: "entrada", quantidade: 1 })}>
-                              <Plus className="h-4 w-4" />
-                            </Button>
+                            {isAdmin && (
+                              <>
+                                <Button size="icon" variant="outline" title="Registrar saída"
+                                  disabled={movMutation.isPending || p.estoque_atual <= 0}
+                                  onClick={() => movMutation.mutate({ produto_id: p.id, tipo: "saida", quantidade: 1 })}>
+                                  <Minus className="h-4 w-4" />
+                                </Button>
+                                <Button size="icon" variant="outline" title="Registrar entrada"
+                                  disabled={movMutation.isPending}
+                                  onClick={() => movMutation.mutate({ produto_id: p.id, tipo: "entrada", quantidade: 1 })}>
+                                  <Plus className="h-4 w-4" />
+                                </Button>
+                              </>
+                            )}
                             <Button size="icon" variant="ghost" title="Ver histórico" onClick={() => setHistoricoProduto(p)}>
                               <History className="h-4 w-4" />
                             </Button>
+                            {isAdmin && (
                             <AlertDialog>
                               <AlertDialogTrigger asChild>
                                 <Button size="icon" variant="ghost" title="Excluir peça">
@@ -275,6 +359,7 @@ function EstoquePage() {
                                 </AlertDialogFooter>
                               </AlertDialogContent>
                             </AlertDialog>
+                            )}
                           </div>
                         </TableCell>
                       </TableRow>
