@@ -471,9 +471,9 @@ function NovoProdutoDialog({ open, onOpenChange }: { open: boolean; onOpenChange
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
       <DialogTrigger asChild>
-        <Button><Plus className="h-4 w-4 mr-1" /> Nova peça</Button>
+        <Button className="w-full md:w-auto"><Plus className="h-4 w-4 mr-1" /> Nova peça</Button>
       </DialogTrigger>
-      <DialogContent className="max-w-2xl max-h-[90vh] overflow-y-auto">
+      <DialogContent className="w-[calc(100vw-1.5rem)] max-w-2xl max-h-[90vh] overflow-y-auto">
         <DialogHeader>
           <DialogTitle>Cadastrar nova peça</DialogTitle>
           <DialogDescription>Preencha os dados. Só o modelo é obrigatório.</DialogDescription>
@@ -569,7 +569,7 @@ function HistoricoDialog({ produto, onClose }: { produto: Produto | null; onClos
 
   return (
     <Dialog open={!!produto} onOpenChange={(o) => !o && onClose()}>
-      <DialogContent className="max-w-lg">
+      <DialogContent className="w-[calc(100vw-1.5rem)] max-w-lg">
         <DialogHeader>
           <DialogTitle>Histórico — {produto?.modelo}</DialogTitle>
           <DialogDescription>Últimas 50 movimentações desta peça.</DialogDescription>
