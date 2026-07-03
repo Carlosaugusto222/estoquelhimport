@@ -12,6 +12,7 @@ import { Route as rootRouteImport } from './routes/__root'
 import { Route as AuthRouteImport } from './routes/auth'
 import { Route as AuthenticatedRouteRouteImport } from './routes/_authenticated/route'
 import { Route as IndexRouteImport } from './routes/index'
+import { Route as AuthenticatedGerenciamentoRouteImport } from './routes/_authenticated/gerenciamento'
 import { Route as AuthenticatedEstoqueRouteImport } from './routes/_authenticated/estoque'
 
 const AuthRoute = AuthRouteImport.update({
@@ -28,6 +29,12 @@ const IndexRoute = IndexRouteImport.update({
   path: '/',
   getParentRoute: () => rootRouteImport,
 } as any)
+const AuthenticatedGerenciamentoRoute =
+  AuthenticatedGerenciamentoRouteImport.update({
+    id: '/gerenciamento',
+    path: '/gerenciamento',
+    getParentRoute: () => AuthenticatedRouteRoute,
+  } as any)
 const AuthenticatedEstoqueRoute = AuthenticatedEstoqueRouteImport.update({
   id: '/estoque',
   path: '/estoque',
@@ -38,11 +45,13 @@ export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
   '/auth': typeof AuthRoute
   '/estoque': typeof AuthenticatedEstoqueRoute
+  '/gerenciamento': typeof AuthenticatedGerenciamentoRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
   '/auth': typeof AuthRoute
   '/estoque': typeof AuthenticatedEstoqueRoute
+  '/gerenciamento': typeof AuthenticatedGerenciamentoRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
@@ -50,13 +59,20 @@ export interface FileRoutesById {
   '/_authenticated': typeof AuthenticatedRouteRouteWithChildren
   '/auth': typeof AuthRoute
   '/_authenticated/estoque': typeof AuthenticatedEstoqueRoute
+  '/_authenticated/gerenciamento': typeof AuthenticatedGerenciamentoRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
-  fullPaths: '/' | '/auth' | '/estoque'
+  fullPaths: '/' | '/auth' | '/estoque' | '/gerenciamento'
   fileRoutesByTo: FileRoutesByTo
-  to: '/' | '/auth' | '/estoque'
-  id: '__root__' | '/' | '/_authenticated' | '/auth' | '/_authenticated/estoque'
+  to: '/' | '/auth' | '/estoque' | '/gerenciamento'
+  id:
+    | '__root__'
+    | '/'
+    | '/_authenticated'
+    | '/auth'
+    | '/_authenticated/estoque'
+    | '/_authenticated/gerenciamento'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
@@ -88,6 +104,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof IndexRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/_authenticated/gerenciamento': {
+      id: '/_authenticated/gerenciamento'
+      path: '/gerenciamento'
+      fullPath: '/gerenciamento'
+      preLoaderRoute: typeof AuthenticatedGerenciamentoRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
+    }
     '/_authenticated/estoque': {
       id: '/_authenticated/estoque'
       path: '/estoque'
@@ -100,10 +123,12 @@ declare module '@tanstack/react-router' {
 
 interface AuthenticatedRouteRouteChildren {
   AuthenticatedEstoqueRoute: typeof AuthenticatedEstoqueRoute
+  AuthenticatedGerenciamentoRoute: typeof AuthenticatedGerenciamentoRoute
 }
 
 const AuthenticatedRouteRouteChildren: AuthenticatedRouteRouteChildren = {
   AuthenticatedEstoqueRoute: AuthenticatedEstoqueRoute,
+  AuthenticatedGerenciamentoRoute: AuthenticatedGerenciamentoRoute,
 }
 
 const AuthenticatedRouteRouteWithChildren =
