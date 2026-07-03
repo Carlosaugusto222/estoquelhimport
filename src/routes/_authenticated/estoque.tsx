@@ -368,6 +368,15 @@ function EstoquePage() {
                             <Button size="icon" variant="ghost" title="Ver histórico" className="h-8 w-8 rounded-md text-muted-foreground hover:text-foreground" onClick={() => setHistoricoProduto(p)}>
                               <History className="h-4 w-4" />
                             </Button>
+                            <Button
+                              size="icon"
+                              variant="ghost"
+                              title="Consultar no WhatsApp"
+                              className="h-8 w-8 rounded-md text-emerald-600 hover:bg-emerald-500/10 hover:text-emerald-700 dark:text-emerald-400 dark:hover:text-emerald-300"
+                              onClick={() => consultarNoWhatsapp(p)}
+                            >
+                              <MessageCircle className="h-4 w-4" />
+                            </Button>
                             {isAdmin && (
                             <AlertDialog>
                               <AlertDialogTrigger asChild>
