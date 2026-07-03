@@ -192,9 +192,7 @@ function EstoquePage() {
       <header className="border-b bg-background sticky top-0 z-10">
         <div className="mx-auto max-w-[1400px] flex items-center justify-between gap-4 px-4 py-3">
           <div className="flex items-center gap-2">
-            <div className="flex h-9 w-9 items-center justify-center rounded-lg bg-primary text-primary-foreground">
-              <Package className="h-5 w-5" />
-            </div>
+            <img src={logo} alt="LH Import" className="h-10 w-10 rounded-lg object-cover" />
             <div>
               <h1 className="font-semibold leading-tight">Estoque LH Import</h1>
               <p className="text-xs text-muted-foreground">Telas e baterias</p>
