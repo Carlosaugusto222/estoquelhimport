@@ -11,11 +11,12 @@ export function SiteFooter() {
           <img
             src={upl}
             alt="UpLeadstudio"
-            width="24"
-            height="24"
+            width="120"
+            height="120"
             loading="lazy"
             decoding="async"
-            className="h-6 w-6 rounded-md object-contain"
+            className="h-30 w-30 rounded-md object-contain"
+            style={{ height: "7.5rem", width: "7.5rem" }}
           />
           <p className="text-[11px] text-muted-foreground">
             Desenvolvido por <span className="font-display font-semibold text-foreground">UpLeadstudio</span> — Carlos Augusto
