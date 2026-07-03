@@ -8,6 +8,7 @@ import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/com
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import logo from "@/assets/logo.webp";
 import { toast } from "sonner";
+import { SiteFooter } from "@/components/site-footer";
 
 export const Route = createFileRoute("/auth")({
   ssr: false,
@@ -50,7 +51,8 @@ function AuthPage() {
   }
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-muted/30 px-4">
+    <div className="min-h-screen flex flex-col bg-muted/30">
+      <div className="flex flex-1 items-center justify-center px-4 py-8">
       <Card className="w-full max-w-md">
         <CardHeader className="text-center space-y-2">
           <img src={logo} alt="LH Import" width="64" height="64" fetchPriority="high" decoding="async" className="mx-auto h-16 w-16 rounded-xl object-cover" />
@@ -92,6 +94,8 @@ function AuthPage() {
           </Tabs>
         </CardContent>
       </Card>
+      </div>
+      <SiteFooter />
     </div>
   );
 }

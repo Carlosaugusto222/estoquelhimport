@@ -27,6 +27,7 @@ import {
   ShieldCheck, Eye, Users,
 } from "lucide-react";
 import { toast } from "sonner";
+import { SiteFooter } from "@/components/site-footer";
 
 export const Route = createFileRoute("/_authenticated/estoque")({
   component: EstoquePage,
@@ -377,6 +378,7 @@ function EstoquePage() {
       </main>
 
       <HistoricoDialog produto={historicoProduto} onClose={() => setHistoricoProduto(null)} />
+      <SiteFooter />
     </div>
   );
 }

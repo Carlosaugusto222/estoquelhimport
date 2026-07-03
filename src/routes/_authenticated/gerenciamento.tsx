@@ -23,6 +23,7 @@ import {
   ShieldCheck, ShieldOff, Trash2, Users, ArrowLeft, Package, LogOut,
 } from "lucide-react";
 import { toast } from "sonner";
+import { SiteFooter } from "@/components/site-footer";
 
 export const Route = createFileRoute("/_authenticated/gerenciamento")({
   component: GerenciamentoPage,
@@ -229,6 +230,7 @@ function GerenciamentoPage() {
           </Card>
         )}
       </main>
+      <SiteFooter />
     </div>
   );
 }
