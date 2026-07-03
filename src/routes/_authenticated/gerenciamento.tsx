@@ -85,26 +85,26 @@ function GerenciamentoPage() {
   return (
     <div className="min-h-screen bg-muted/30">
       <header className="border-b bg-background sticky top-0 z-10">
-        <div className="mx-auto max-w-[1200px] flex items-center justify-between gap-4 px-4 py-3">
-          <div className="flex items-center gap-2">
-            <img src={logo} alt="LH Import" width="40" height="40" loading="lazy" decoding="async" className="h-10 w-10 rounded-lg object-cover" />
-            <div>
-              <h1 className="font-semibold leading-tight">Gerenciamento</h1>
-              <p className="text-xs text-muted-foreground">Usuários e permissões</p>
+        <div className="mx-auto max-w-[1200px] grid grid-cols-[minmax(0,1fr)_auto] items-center gap-3 px-3 py-3 sm:px-4">
+          <div className="flex min-w-0 items-center gap-2">
+            <img src={logo} alt="LH Import" width="40" height="40" loading="lazy" decoding="async" className="h-10 w-10 shrink-0 rounded-lg object-cover" />
+            <div className="min-w-0">
+              <h1 className="truncate font-semibold leading-tight">Gerenciamento</h1>
+              <p className="truncate text-xs text-muted-foreground">Usuários e permissões</p>
             </div>
           </div>
-          <div className="flex items-center gap-2">
-            <Button asChild variant="ghost" size="sm">
-              <Link to="/estoque"><ArrowLeft className="h-4 w-4 mr-1" /> Estoque</Link>
+          <div className="flex shrink-0 items-center gap-1 sm:gap-2">
+            <Button asChild variant="ghost" size="sm" aria-label="Voltar ao estoque">
+              <Link to="/estoque"><ArrowLeft className="h-4 w-4 sm:mr-1" /><span className="hidden sm:inline">Estoque</span></Link>
             </Button>
-            <Button variant="ghost" size="sm" onClick={handleLogout}>
-              <LogOut className="h-4 w-4 mr-1" /> Sair
+            <Button variant="ghost" size="sm" onClick={handleLogout} aria-label="Sair">
+              <LogOut className="h-4 w-4 sm:mr-1" /><span className="hidden sm:inline">Sair</span>
             </Button>
           </div>
         </div>
       </header>
 
-      <main className="mx-auto max-w-[1200px] px-4 py-6 space-y-4">
+      <main className="mx-auto max-w-[1200px] px-3 py-4 space-y-4 sm:px-4 sm:py-6">
         {verificandoAdmin && (
           <Card><CardContent className="p-6 text-center text-muted-foreground">Verificando permissões…</CardContent></Card>
         )}
@@ -127,14 +127,14 @@ function GerenciamentoPage() {
         {isAdmin && (
           <Card>
             <CardContent className="p-3 sm:p-4 space-y-3">
-              <div className="flex items-center justify-between">
-                <div>
+              <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2">
+                <div className="min-w-0">
                   <h2 className="font-medium">Usuários do sistema</h2>
                   <p className="text-sm text-muted-foreground">
                     Promova ou remova administradores. Somente administradores podem alterar o estoque.
                   </p>
                 </div>
-                <Badge variant="secondary" className="gap-1">
+                <Badge variant="secondary" className="w-fit shrink-0 gap-1">
                   <Package className="h-3 w-3" /> {usuarios.length} usuário{usuarios.length === 1 ? "" : "s"}
                 </Badge>
               </div>
@@ -180,7 +180,7 @@ function GerenciamentoPage() {
                           {u.last_sign_in_at ? new Date(u.last_sign_in_at).toLocaleString("pt-BR") : "—"}
                         </TableCell>
                         <TableCell>
-                          <div className="flex items-center justify-end gap-2">
+                          <div className="flex flex-wrap items-center justify-end gap-2">
                             {u.is_admin ? (
                               <Button
                                 size="sm"
@@ -188,7 +188,7 @@ function GerenciamentoPage() {
                                 disabled={u.is_self || mudarAdmin.isPending}
                                 onClick={() => mudarAdmin.mutate({ user_id: u.id, tornar_admin: false })}
                               >
-                                <ShieldOff className="h-4 w-4 mr-1" /> Remover admin
+                                <ShieldOff className="h-4 w-4 mr-1" /> <span className="hidden sm:inline">Remover admin</span><span className="sm:hidden">Remover</span>
                               </Button>
                             ) : (
                               <Button
@@ -196,7 +196,7 @@ function GerenciamentoPage() {
                                 disabled={mudarAdmin.isPending}
                                 onClick={() => mudarAdmin.mutate({ user_id: u.id, tornar_admin: true })}
                               >
-                                <ShieldCheck className="h-4 w-4 mr-1" /> Tornar admin
+                                <ShieldCheck className="h-4 w-4 mr-1" /> <span className="hidden sm:inline">Tornar admin</span><span className="sm:hidden">Promover</span>
                               </Button>
                             )}
                             <AlertDialog>
