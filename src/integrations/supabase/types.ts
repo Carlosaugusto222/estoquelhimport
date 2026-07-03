@@ -14,7 +14,104 @@ export type Database = {
   }
   public: {
     Tables: {
-      [_ in never]: never
+      movimentacoes: {
+        Row: {
+          created_at: string
+          id: string
+          observacoes: string | null
+          produto_id: string
+          quantidade: number
+          tipo: string
+          user_id: string
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          observacoes?: string | null
+          produto_id: string
+          quantidade: number
+          tipo: string
+          user_id: string
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          observacoes?: string | null
+          produto_id?: string
+          quantidade?: number
+          tipo?: string
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "movimentacoes_produto_id_fkey"
+            columns: ["produto_id"]
+            isOneToOne: false
+            referencedRelation: "produtos"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      produtos: {
+        Row: {
+          categoria: string
+          created_at: string
+          data_compra: string | null
+          estoque_atual: number
+          estoque_minimo: number
+          fornecedor: string | null
+          id: string
+          modelo: string
+          numero_serie: string | null
+          observacoes: string | null
+          preco_custo: number | null
+          preco_venda: number | null
+          qualidade: string | null
+          tem_garantia: boolean
+          tier: string | null
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          categoria: string
+          created_at?: string
+          data_compra?: string | null
+          estoque_atual?: number
+          estoque_minimo?: number
+          fornecedor?: string | null
+          id?: string
+          modelo: string
+          numero_serie?: string | null
+          observacoes?: string | null
+          preco_custo?: number | null
+          preco_venda?: number | null
+          qualidade?: string | null
+          tem_garantia?: boolean
+          tier?: string | null
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          categoria?: string
+          created_at?: string
+          data_compra?: string | null
+          estoque_atual?: number
+          estoque_minimo?: number
+          fornecedor?: string | null
+          id?: string
+          modelo?: string
+          numero_serie?: string | null
+          observacoes?: string | null
+          preco_custo?: number | null
+          preco_venda?: number | null
+          qualidade?: string | null
+          tem_garantia?: boolean
+          tier?: string | null
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
     }
     Views: {
       [_ in never]: never
