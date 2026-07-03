@@ -164,7 +164,7 @@ function EstoquePage() {
     onSuccess: (_d, v) => {
       qc.invalidateQueries({ queryKey: ["produtos"] });
       qc.invalidateQueries({ queryKey: ["movimentacoes"] });
-      toast.success(v.tipo === "entrada" ? "Entrada registrada" : "Saída registrada");
+      toast.success(v.tipo === "entrada" ? "+1 no estoque — pronto para vender" : "Venda registrada — estoque atualizado");
     },
     onError: (e: Error) => toast.error(e.message),
   });
@@ -176,7 +176,7 @@ function EstoquePage() {
     },
     onSuccess: () => {
       qc.invalidateQueries({ queryKey: ["produtos"] });
-      toast.success("Peça removida");
+      toast.success("Peça removida do catálogo");
     },
     onError: (e: Error) => toast.error(e.message),
   });
@@ -195,15 +195,15 @@ function EstoquePage() {
           <div className="flex min-w-0 items-center gap-2">
             <img src={logo} alt="LH Import" width="40" height="40" loading="lazy" decoding="async" className="h-10 w-10 shrink-0 rounded-lg object-cover" />
             <div className="min-w-0">
-              <h1 className="truncate font-semibold leading-tight">Estoque LH Import</h1>
-              <p className="truncate text-xs text-muted-foreground">Telas e baterias</p>
+              <h1 className="truncate font-semibold leading-tight">Controle Total • LH Import</h1>
+              <p className="truncate text-xs text-muted-foreground">Nunca perca uma venda por falta de peça</p>
             </div>
           </div>
           <div className="flex shrink-0 items-center gap-1 sm:gap-2">
             {isAdmin ? (
-              <Badge className="hidden gap-1 sm:inline-flex"><ShieldCheck className="h-3 w-3" /> Administrador</Badge>
+              <Badge className="hidden gap-1 sm:inline-flex"><ShieldCheck className="h-3 w-3" /> Acesso total</Badge>
             ) : (
-              <Badge variant="secondary" className="hidden gap-1 sm:inline-flex"><Eye className="h-3 w-3" /> Somente leitura</Badge>
+              <Badge variant="secondary" className="hidden gap-1 sm:inline-flex"><Eye className="h-3 w-3" /> Modo visualização</Badge>
             )}
             {isAdmin && (
               <Button asChild variant="outline" size="sm" aria-label="Gerenciar usuários">
@@ -224,12 +224,12 @@ function EstoquePage() {
               <div className="flex items-start gap-3">
                 <ShieldCheck className="h-5 w-5 text-primary mt-0.5" />
                 <div>
-                  <p className="font-medium">Nenhum administrador cadastrado</p>
-                  <p className="text-sm text-muted-foreground">Como você é o primeiro usuário, pode se tornar o administrador do sistema.</p>
+                  <p className="font-medium">Assuma o comando do seu estoque</p>
+                  <p className="text-sm text-muted-foreground">Você é o primeiro por aqui. Torne-se administrador em 1 clique e comece a controlar tudo agora.</p>
                 </div>
               </div>
               <Button onClick={() => virarAdmin.mutate()} disabled={virarAdmin.isPending}>
-                Tornar-me administrador
+                Quero assumir o controle
               </Button>
             </CardContent>
           </Card>
@@ -239,15 +239,15 @@ function EstoquePage() {
           <Card className="border-muted-foreground/20 bg-muted/50">
             <CardContent className="p-3 flex items-center gap-2 text-sm text-muted-foreground">
               <Eye className="h-4 w-4" />
-              Você está no modo somente leitura. Peça a um administrador para alterar o estoque.
+              Você está apenas visualizando. Para movimentar o estoque, peça acesso ao administrador.
             </CardContent>
           </Card>
         )}
 
         <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
-          <StatCard icon={<Smartphone className="h-5 w-5" />} label="Telas em estoque" value={totais.telas} />
-          <StatCard icon={<BatteryCharging className="h-5 w-5" />} label="Baterias em estoque" value={totais.baterias} />
-          <StatCard icon={<AlertTriangle className="h-5 w-5" />} label="Peças em alerta" value={totais.alertas} tone={totais.alertas > 0 ? "warn" : undefined} />
+          <StatCard icon={<Smartphone className="h-5 w-5" />} label="Telas prontas para vender" value={totais.telas} />
+          <StatCard icon={<BatteryCharging className="h-5 w-5" />} label="Baterias prontas para vender" value={totais.baterias} />
+          <StatCard icon={<AlertTriangle className="h-5 w-5" />} label={totais.alertas > 0 ? "Vendas em risco agora" : "Tudo sob controle"} value={totais.alertas} tone={totais.alertas > 0 ? "warn" : undefined} />
         </div>
 
         <Card>
@@ -263,7 +263,7 @@ function EstoquePage() {
               <div className="relative flex-1">
                 <Search className="absolute left-2 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
                 <Input
-                  placeholder="Buscar modelo, qualidade, fornecedor, número de série…"
+                  placeholder="Encontre em segundos: modelo, qualidade, fornecedor ou nº de série"
                   value={busca}
                   onChange={(e) => setBusca(e.target.value)}
                   className="pl-8"
@@ -293,11 +293,11 @@ function EstoquePage() {
                 </TableHeader>
                 <TableBody>
                   {isLoading && (
-                    <TableRow><TableCell colSpan={13} className="text-center text-muted-foreground py-8">Carregando…</TableCell></TableRow>
+                    <TableRow><TableCell colSpan={13} className="text-center text-muted-foreground py-8">Preparando seu estoque…</TableCell></TableRow>
                   )}
                   {!isLoading && produtosFiltrados.length === 0 && (
                     <TableRow><TableCell colSpan={13} className="text-center text-muted-foreground py-8">
-                      Nenhuma peça. Clique em <b>Nova peça</b> para começar.
+                      Seu estoque está vazio — e cada dia sem cadastro é uma venda que pode escapar. Comece agora em <b>Nova peça</b>.
                     </TableCell></TableRow>
                   )}
                   {produtosFiltrados.map((p) => {
@@ -461,7 +461,7 @@ function NovoProdutoDialog({ open, onOpenChange }: { open: boolean; onOpenChange
     },
     onSuccess: () => {
       qc.invalidateQueries({ queryKey: ["produtos"] });
-      toast.success("Peça cadastrada");
+      toast.success("Peça no ar — pronta para gerar receita");
       setForm(FORM_INICIAL);
       onOpenChange(false);
     },
@@ -475,8 +475,8 @@ function NovoProdutoDialog({ open, onOpenChange }: { open: boolean; onOpenChange
       </DialogTrigger>
       <DialogContent className="w-[calc(100vw-1.5rem)] max-w-2xl max-h-[90vh] overflow-y-auto">
         <DialogHeader>
-          <DialogTitle>Cadastrar nova peça</DialogTitle>
-          <DialogDescription>Preencha os dados. Só o modelo é obrigatório.</DialogDescription>
+          <DialogTitle>Nova peça, nova oportunidade de venda</DialogTitle>
+          <DialogDescription>Leva menos de 30 segundos. Só o modelo é obrigatório — o resto é bônus.</DialogDescription>
         </DialogHeader>
         <form
           onSubmit={(e) => { e.preventDefault(); criar.mutate(); }}
@@ -533,8 +533,8 @@ function NovoProdutoDialog({ open, onOpenChange }: { open: boolean; onOpenChange
             <Input type="number" min="0" value={form.estoque_inicial} onChange={(e) => setForm({ ...form, estoque_inicial: e.target.value })} />
           </Field>
           <DialogFooter className="sm:col-span-2 mt-2">
-            <Button type="button" variant="ghost" onClick={() => onOpenChange(false)}>Cancelar</Button>
-            <Button type="submit" disabled={criar.isPending}>Cadastrar</Button>
+            <Button type="button" variant="ghost" onClick={() => onOpenChange(false)}>Agora não</Button>
+            <Button type="submit" disabled={criar.isPending}>{criar.isPending ? "Salvando…" : "Cadastrar e liberar venda"}</Button>
           </DialogFooter>
         </form>
       </DialogContent>
@@ -571,8 +571,8 @@ function HistoricoDialog({ produto, onClose }: { produto: Produto | null; onClos
     <Dialog open={!!produto} onOpenChange={(o) => !o && onClose()}>
       <DialogContent className="w-[calc(100vw-1.5rem)] max-w-lg">
         <DialogHeader>
-          <DialogTitle>Histórico — {produto?.modelo}</DialogTitle>
-          <DialogDescription>Últimas 50 movimentações desta peça.</DialogDescription>
+          <DialogTitle>Tudo o que aconteceu com {produto?.modelo}</DialogTitle>
+          <DialogDescription>As 50 últimas movimentações — total rastreabilidade, zero achismo.</DialogDescription>
         </DialogHeader>
         <div className="max-h-[400px] overflow-y-auto border rounded-md">
           <Table>
@@ -585,8 +585,8 @@ function HistoricoDialog({ produto, onClose }: { produto: Produto | null; onClos
               </TableRow>
             </TableHeader>
             <TableBody>
-              {isLoading && <TableRow><TableCell colSpan={4} className="text-center py-4 text-muted-foreground">Carregando…</TableCell></TableRow>}
-              {!isLoading && movs.length === 0 && <TableRow><TableCell colSpan={4} className="text-center py-4 text-muted-foreground">Sem movimentações.</TableCell></TableRow>}
+              {isLoading && <TableRow><TableCell colSpan={4} className="text-center py-4 text-muted-foreground">Buscando o histórico…</TableCell></TableRow>}
+              {!isLoading && movs.length === 0 && <TableRow><TableCell colSpan={4} className="text-center py-4 text-muted-foreground">Ainda sem movimentações — registre a primeira entrada ou saída.</TableCell></TableRow>}
               {movs.map((m) => (
                 <TableRow key={m.id}>
                   <TableCell className="text-xs">{new Date(m.created_at).toLocaleString("pt-BR")}</TableCell>
