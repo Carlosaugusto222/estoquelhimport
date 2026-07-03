@@ -191,33 +191,33 @@ function EstoquePage() {
   return (
     <div className="min-h-screen bg-muted/30">
       <header className="border-b bg-background sticky top-0 z-10">
-        <div className="mx-auto max-w-[1400px] flex items-center justify-between gap-4 px-4 py-3">
-          <div className="flex items-center gap-2">
-            <img src={logo} alt="LH Import" width="40" height="40" loading="lazy" decoding="async" className="h-10 w-10 rounded-lg object-cover" />
-            <div>
-              <h1 className="font-semibold leading-tight">Estoque LH Import</h1>
-              <p className="text-xs text-muted-foreground">Telas e baterias</p>
+        <div className="mx-auto max-w-[1400px] grid grid-cols-[minmax(0,1fr)_auto] items-center gap-3 px-3 py-3 sm:px-4">
+          <div className="flex min-w-0 items-center gap-2">
+            <img src={logo} alt="LH Import" width="40" height="40" loading="lazy" decoding="async" className="h-10 w-10 shrink-0 rounded-lg object-cover" />
+            <div className="min-w-0">
+              <h1 className="truncate font-semibold leading-tight">Estoque LH Import</h1>
+              <p className="truncate text-xs text-muted-foreground">Telas e baterias</p>
             </div>
           </div>
-          <div className="flex items-center gap-2">
+          <div className="flex shrink-0 items-center gap-1 sm:gap-2">
             {isAdmin ? (
-              <Badge className="gap-1"><ShieldCheck className="h-3 w-3" /> Administrador</Badge>
+              <Badge className="hidden gap-1 sm:inline-flex"><ShieldCheck className="h-3 w-3" /> Administrador</Badge>
             ) : (
-              <Badge variant="secondary" className="gap-1"><Eye className="h-3 w-3" /> Somente leitura</Badge>
+              <Badge variant="secondary" className="hidden gap-1 sm:inline-flex"><Eye className="h-3 w-3" /> Somente leitura</Badge>
             )}
             {isAdmin && (
-              <Button asChild variant="outline" size="sm">
-                <Link to="/gerenciamento"><Users className="h-4 w-4 mr-1" /> Gerenciar</Link>
+              <Button asChild variant="outline" size="sm" aria-label="Gerenciar usuários">
+                <Link to="/gerenciamento"><Users className="h-4 w-4 sm:mr-1" /><span className="hidden sm:inline">Gerenciar</span></Link>
               </Button>
             )}
-            <Button variant="ghost" size="sm" onClick={handleLogout}>
-              <LogOut className="h-4 w-4 mr-1" /> Sair
+            <Button variant="ghost" size="sm" onClick={handleLogout} aria-label="Sair">
+              <LogOut className="h-4 w-4 sm:mr-1" /><span className="hidden sm:inline">Sair</span>
             </Button>
           </div>
         </div>
       </header>
 
-      <main className="mx-auto max-w-[1400px] px-4 py-6 space-y-4">
+      <main className="mx-auto max-w-[1400px] px-3 py-4 space-y-4 sm:px-4 sm:py-6">
         {!existeAdmin && !isAdmin && (
           <Card className="border-primary/40 bg-primary/5">
             <CardContent className="p-4 flex flex-col sm:flex-row sm:items-center gap-3 justify-between">
@@ -253,8 +253,8 @@ function EstoquePage() {
         <Card>
           <CardContent className="p-3 sm:p-4 space-y-3">
             <div className="flex flex-col md:flex-row md:items-center gap-3">
-              <Tabs value={filtro} onValueChange={(v) => setFiltro(v as typeof filtro)}>
-                <TabsList>
+              <Tabs value={filtro} onValueChange={(v) => setFiltro(v as typeof filtro)} className="w-full md:w-auto">
+                <TabsList className="w-full md:w-auto">
                   <TabsTrigger value="todos">Todos</TabsTrigger>
                   <TabsTrigger value="tela">Telas</TabsTrigger>
                   <TabsTrigger value="bateria">Baterias</TabsTrigger>
@@ -471,9 +471,9 @@ function NovoProdutoDialog({ open, onOpenChange }: { open: boolean; onOpenChange
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
       <DialogTrigger asChild>
-        <Button><Plus className="h-4 w-4 mr-1" /> Nova peça</Button>
+        <Button className="w-full md:w-auto"><Plus className="h-4 w-4 mr-1" /> Nova peça</Button>
       </DialogTrigger>
-      <DialogContent className="max-w-2xl max-h-[90vh] overflow-y-auto">
+      <DialogContent className="w-[calc(100vw-1.5rem)] max-w-2xl max-h-[90vh] overflow-y-auto">
         <DialogHeader>
           <DialogTitle>Cadastrar nova peça</DialogTitle>
           <DialogDescription>Preencha os dados. Só o modelo é obrigatório.</DialogDescription>
@@ -569,7 +569,7 @@ function HistoricoDialog({ produto, onClose }: { produto: Produto | null; onClos
 
   return (
     <Dialog open={!!produto} onOpenChange={(o) => !o && onClose()}>
-      <DialogContent className="max-w-lg">
+      <DialogContent className="w-[calc(100vw-1.5rem)] max-w-lg">
         <DialogHeader>
           <DialogTitle>Histórico — {produto?.modelo}</DialogTitle>
           <DialogDescription>Últimas 50 movimentações desta peça.</DialogDescription>
