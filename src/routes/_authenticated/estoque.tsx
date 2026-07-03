@@ -71,6 +71,17 @@ function EstoquePage() {
   const [busca, setBusca] = useState("");
   const [openNovo, setOpenNovo] = useState(false);
   const [historicoProduto, setHistoricoProduto] = useState<Produto | null>(null);
+  const [waSettingsOpen, setWaSettingsOpen] = useState(false);
+
+  function consultarNoWhatsapp(p: Produto) {
+    const numero = getStoredWhatsappNumber();
+    if (!numero) {
+      toast.info("Configure o número do WhatsApp da loja primeiro.");
+      setWaSettingsOpen(true);
+      return;
+    }
+    openWhatsapp(numero, mensagemConsulta(p));
+  }
 
   const { data: isAdmin = false } = useQuery({
     queryKey: ["is-admin"],
