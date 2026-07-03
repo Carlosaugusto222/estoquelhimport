@@ -526,9 +526,9 @@ function NovoProdutoDialog({ open, onOpenChange }: { open: boolean; onOpenChange
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
       <DialogTrigger asChild>
-        <Button className="w-full md:w-auto"><Plus className="h-4 w-4 mr-1" /> Nova peça</Button>
+        <Button className="w-full rounded-lg shadow-[0_8px_24px_-12px_oklch(0.322_0.028_258/0.5)] md:w-auto"><Plus className="h-4 w-4 mr-1" /> Nova peça</Button>
       </DialogTrigger>
-      <DialogContent className="w-[calc(100vw-1.5rem)] max-w-2xl max-h-[90vh] overflow-y-auto">
+      <DialogContent className="w-[calc(100vw-1.5rem)] max-w-2xl max-h-[90vh] overflow-y-auto rounded-2xl">
         <DialogHeader>
           <DialogTitle>Nova peça, nova oportunidade de venda</DialogTitle>
           <DialogDescription>Leva menos de 30 segundos. Só o modelo é obrigatório — o resto é bônus.</DialogDescription>
