@@ -218,24 +218,7 @@ function EstoquePage() {
       </header>
 
       <main className="mx-auto max-w-[1400px] px-4 py-6 space-y-6 sm:px-6 sm:py-8">
-        {!existeAdmin && !isAdmin && (
-          <Card className="rounded-2xl border-primary/20 bg-primary/[0.03] shadow-none">
-            <CardContent className="p-5 flex flex-col sm:flex-row sm:items-center gap-3 justify-between">
-              <div className="flex items-start gap-3">
-                <ShieldCheck className="h-5 w-5 text-primary mt-0.5" />
-                <div>
-                  <p className="font-display font-semibold tracking-tight">Assuma o comando do seu estoque</p>
-                  <p className="text-sm text-muted-foreground">Você é o primeiro por aqui. Torne-se administrador em 1 clique e comece a controlar tudo agora.</p>
-                </div>
-              </div>
-              <Button onClick={() => virarAdmin.mutate()} disabled={virarAdmin.isPending} className="rounded-lg">
-                Quero assumir o controle
-              </Button>
-            </CardContent>
-          </Card>
-        )}
-
-        {existeAdmin && !isAdmin && (
+        {!isAdmin && (
           <Card className="rounded-2xl border-border bg-muted/40 shadow-none">
             <CardContent className="p-3 flex items-center gap-2 text-sm text-muted-foreground">
               <Eye className="h-4 w-4" />
