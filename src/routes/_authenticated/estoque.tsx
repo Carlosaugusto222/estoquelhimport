@@ -152,7 +152,9 @@ function EstoquePage() {
         produto_id: input.produto_id,
         tipo: input.tipo,
         quantidade: input.quantidade,
-        observacoes: input.observacoes?.slice(0, 500) ?? null,
+        observacoes: input.observacoes
+          ? sanitizeText(input.observacoes).slice(0, 500) || null
+          : null,
         user_id: userData.user.id,
       });
       if (error) throw error;
