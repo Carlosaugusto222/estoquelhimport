@@ -99,35 +99,6 @@ function EstoquePage() {
     },
   });
 
-  const { data: existeAdmin = true } = useQuery({
-    queryKey: ["existe-admin"],
-    queryFn: async () => {
-      const { count, error } = await supabase
-        .from("user_roles")
-        .select("id", { count: "exact", head: true })
-        .eq("role", "admin");
-      if (error) return true;
-      return (count ?? 0) > 0;
-    },
-  });
-
-  const virarAdmin = useMutation({
-    mutationFn: async () => {
-      const { data: userData } = await supabase.auth.getUser();
-      if (!userData.user) throw new Error("Sem sessão");
-      const { error } = await supabase
-        .from("user_roles")
-        .insert({ user_id: userData.user.id, role: "admin" });
-      if (error) throw error;
-    },
-    onSuccess: () => {
-      qc.invalidateQueries({ queryKey: ["is-admin"] });
-      qc.invalidateQueries({ queryKey: ["existe-admin"] });
-      toast.success("Você agora é o administrador!");
-    },
-    onError: (e: Error) => toast.error(e.message),
-  });
-
   const { data: produtos = [], isLoading } = useQuery({
     queryKey: ["produtos"],
     queryFn: async () => {
