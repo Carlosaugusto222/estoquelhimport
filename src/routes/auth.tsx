@@ -1,6 +1,7 @@
 import { createFileRoute, useNavigate } from "@tanstack/react-router";
 import { useEffect, useState } from "react";
 import { supabase } from "@/integrations/supabase/client";
+import { z } from "zod";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -10,6 +11,30 @@ import logo from "@/assets/logo.webp";
 import { toast } from "sonner";
 import { SiteFooter } from "@/components/site-footer";
 import { ThemeToggle } from "@/components/theme-toggle";
+
+const loginSchema = z.object({
+  email: z.string().trim().email("E-mail inválido").max(255),
+  password: z.string().min(1, "Informe sua senha").max(72),
+});
+const signupSchema = z.object({
+  email: z.string().trim().email("E-mail inválido").max(255),
+  password: z
+    .string()
+    .min(8, "A senha precisa ter ao menos 8 caracteres")
+    .max(72, "Senha muito longa"),
+});
+
+function traduzirErroAuth(msg: string | undefined): string {
+  const m = (msg ?? "").toLowerCase();
+  if (m.includes("invalid login") || m.includes("invalid credentials"))
+    return "E-mail ou senha incorretos.";
+  if (m.includes("user already registered") || m.includes("already"))
+    return "Este e-mail já está cadastrado.";
+  if (m.includes("email") && m.includes("confirm"))
+    return "Confirme seu e-mail antes de entrar.";
+  if (m.includes("rate")) return "Muitas tentativas. Aguarde um instante.";
+  return msg || "Não foi possível concluir a operação.";
+}
 
 export const Route = createFileRoute("/auth")({
   ssr: false,
@@ -30,25 +55,47 @@ function AuthPage() {
 
   async function handleLogin(e: React.FormEvent) {
     e.preventDefault();
+    const parsed = loginSchema.safeParse({ email, password });
+    if (!parsed.success) {
+      return toast.error(parsed.error.issues[0]?.message ?? "Dados inválidos");
+    }
     setLoading(true);
-    const { error } = await supabase.auth.signInWithPassword({ email, password });
-    setLoading(false);
-    if (error) return toast.error(error.message);
-    toast.success("Bem-vindo!");
-    navigate({ to: "/estoque", replace: true });
+    try {
+      const { error } = await supabase.auth.signInWithPassword(parsed.data);
+      if (error) return toast.error(traduzirErroAuth(error.message));
+      toast.success("Bem-vindo!");
+      navigate({ to: "/estoque", replace: true });
+    } catch {
+      toast.error("Falha de conexão. Tente novamente.");
+    } finally {
+      setLoading(false);
+    }
   }
 
   async function handleSignup(e: React.FormEvent) {
     e.preventDefault();
+    const parsed = signupSchema.safeParse({ email, password });
+    if (!parsed.success) {
+      return toast.error(parsed.error.issues[0]?.message ?? "Dados inválidos");
+    }
     setLoading(true);
-    const { error } = await supabase.auth.signUp({
-      email,
-      password,
-      options: { emailRedirectTo: window.location.origin },
-    });
-    setLoading(false);
-    if (error) return toast.error(error.message);
-    toast.success("Conta criada! Faça login.");
+    try {
+      const { data, error } = await supabase.auth.signUp({
+        ...parsed.data,
+        options: { emailRedirectTo: window.location.origin },
+      });
+      if (error) return toast.error(traduzirErroAuth(error.message));
+      if (data.session) {
+        toast.success("Conta criada!");
+        navigate({ to: "/estoque", replace: true });
+      } else {
+        toast.success("Conta criada! Verifique seu e-mail para confirmar.");
+      }
+    } catch {
+      toast.error("Falha de conexão. Tente novamente.");
+    } finally {
+      setLoading(false);
+    }
   }
 
   return (
@@ -90,7 +137,7 @@ function AuthPage() {
                 </div>
                 <div className="space-y-2">
                   <Label htmlFor="s-pwd">Senha</Label>
-                  <Input id="s-pwd" type="password" required minLength={6} value={password} onChange={(e) => setPassword(e.target.value)} />
+                  <Input id="s-pwd" type="password" required minLength={8} maxLength={72} value={password} onChange={(e) => setPassword(e.target.value)} />
                 </div>
                 <Button type="submit" className="w-full" disabled={loading}>Criar conta</Button>
               </form>
