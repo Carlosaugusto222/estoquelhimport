@@ -51,9 +51,9 @@ function PrivacidadePage() {
               className="h-9 w-9 shrink-0 rounded-lg object-cover ring-1 ring-border/60"
             />
             <div className="min-w-0">
-              <h1 className="truncate font-display text-[15px] font-semibold leading-tight tracking-tight">
+              <p className="truncate font-display text-[15px] font-semibold leading-tight tracking-tight">
                 Política de Privacidade
-              </h1>
+              </p>
               <p className="truncate text-[11px] text-muted-foreground">LGPD — Lei nº 13.709/2018</p>
             </div>
           </div>
@@ -75,10 +75,11 @@ function PrivacidadePage() {
             <div className="not-prose mb-6 flex items-start gap-3 rounded-xl border border-border bg-muted/40 p-4">
               <ShieldCheck className="mt-0.5 h-5 w-5 shrink-0 text-primary" />
               <div>
-                <p className="font-display text-sm font-semibold tracking-tight">
-                  Esta página é mantida pela LH Import
-                </p>
+                <h1 className="not-prose font-display text-lg font-semibold tracking-tight">
+                  Política de Privacidade — LH Import
+                </h1>
                 <p className="mt-1 text-[13px] text-muted-foreground">
+                  Página mantida pela LH Import.{" "}
                   Descreve nossas práticas atuais de tratamento de dados no sistema de
                   estoque. Última atualização: <strong>{atualizadoEm}</strong>. Não constitui
                   certificação ou parecer jurídico.

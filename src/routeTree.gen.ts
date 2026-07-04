@@ -9,6 +9,7 @@
 // Additionally, you should also exclude this file from your linter and/or formatter to prevent it from being checked or modified.
 
 import { Route as rootRouteImport } from './routes/__root'
+import { Route as SitemapDotxmlRouteImport } from './routes/sitemap[.]xml'
 import { Route as PrivacidadeRouteImport } from './routes/privacidade'
 import { Route as AuthRouteImport } from './routes/auth'
 import { Route as AuthenticatedRouteRouteImport } from './routes/_authenticated/route'
@@ -16,6 +17,11 @@ import { Route as IndexRouteImport } from './routes/index'
 import { Route as AuthenticatedGerenciamentoRouteImport } from './routes/_authenticated/gerenciamento'
 import { Route as AuthenticatedEstoqueRouteImport } from './routes/_authenticated/estoque'
 
+const SitemapDotxmlRoute = SitemapDotxmlRouteImport.update({
+  id: '/sitemap.xml',
+  path: '/sitemap.xml',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const PrivacidadeRoute = PrivacidadeRouteImport.update({
   id: '/privacidade',
   path: '/privacidade',
@@ -51,6 +57,7 @@ export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
   '/auth': typeof AuthRoute
   '/privacidade': typeof PrivacidadeRoute
+  '/sitemap.xml': typeof SitemapDotxmlRoute
   '/estoque': typeof AuthenticatedEstoqueRoute
   '/gerenciamento': typeof AuthenticatedGerenciamentoRoute
 }
@@ -58,6 +65,7 @@ export interface FileRoutesByTo {
   '/': typeof IndexRoute
   '/auth': typeof AuthRoute
   '/privacidade': typeof PrivacidadeRoute
+  '/sitemap.xml': typeof SitemapDotxmlRoute
   '/estoque': typeof AuthenticatedEstoqueRoute
   '/gerenciamento': typeof AuthenticatedGerenciamentoRoute
 }
@@ -67,20 +75,34 @@ export interface FileRoutesById {
   '/_authenticated': typeof AuthenticatedRouteRouteWithChildren
   '/auth': typeof AuthRoute
   '/privacidade': typeof PrivacidadeRoute
+  '/sitemap.xml': typeof SitemapDotxmlRoute
   '/_authenticated/estoque': typeof AuthenticatedEstoqueRoute
   '/_authenticated/gerenciamento': typeof AuthenticatedGerenciamentoRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
-  fullPaths: '/' | '/auth' | '/privacidade' | '/estoque' | '/gerenciamento'
+  fullPaths:
+    | '/'
+    | '/auth'
+    | '/privacidade'
+    | '/sitemap.xml'
+    | '/estoque'
+    | '/gerenciamento'
   fileRoutesByTo: FileRoutesByTo
-  to: '/' | '/auth' | '/privacidade' | '/estoque' | '/gerenciamento'
+  to:
+    | '/'
+    | '/auth'
+    | '/privacidade'
+    | '/sitemap.xml'
+    | '/estoque'
+    | '/gerenciamento'
   id:
     | '__root__'
     | '/'
     | '/_authenticated'
     | '/auth'
     | '/privacidade'
+    | '/sitemap.xml'
     | '/_authenticated/estoque'
     | '/_authenticated/gerenciamento'
   fileRoutesById: FileRoutesById
@@ -90,10 +112,18 @@ export interface RootRouteChildren {
   AuthenticatedRouteRoute: typeof AuthenticatedRouteRouteWithChildren
   AuthRoute: typeof AuthRoute
   PrivacidadeRoute: typeof PrivacidadeRoute
+  SitemapDotxmlRoute: typeof SitemapDotxmlRoute
 }
 
 declare module '@tanstack/react-router' {
   interface FileRoutesByPath {
+    '/sitemap.xml': {
+      id: '/sitemap.xml'
+      path: '/sitemap.xml'
+      fullPath: '/sitemap.xml'
+      preLoaderRoute: typeof SitemapDotxmlRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/privacidade': {
       id: '/privacidade'
       path: '/privacidade'
@@ -157,6 +187,7 @@ const rootRouteChildren: RootRouteChildren = {
   AuthenticatedRouteRoute: AuthenticatedRouteRouteWithChildren,
   AuthRoute: AuthRoute,
   PrivacidadeRoute: PrivacidadeRoute,
+  SitemapDotxmlRoute: SitemapDotxmlRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)

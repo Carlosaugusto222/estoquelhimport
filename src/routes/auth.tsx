@@ -38,6 +38,13 @@ function traduzirErroAuth(msg: string | undefined): string {
 
 export const Route = createFileRoute("/auth")({
   ssr: false,
+  head: () => ({
+    meta: [
+      { title: "Entrar — Estoque LH Import" },
+      { name: "description", content: "Acesso restrito ao sistema de estoque da LH Import." },
+      { name: "robots", content: "noindex, follow" },
+    ],
+  }),
   component: AuthPage,
 });
 

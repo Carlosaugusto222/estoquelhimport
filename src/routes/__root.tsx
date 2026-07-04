@@ -94,8 +94,7 @@ export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()(
       { name: "twitter:card", content: "summary_large_image" },
       { name: "twitter:title", content: "Estoque LH Import" },
       { name: "twitter:description", content: "Controle de estoque de telas e baterias da assistência técnica LH Import." },
-      { property: "og:image", content: "https://storage.googleapis.com/gpt-engineer-file-uploads/ihb6DqEZBDUmb4WdABCU5St5LKx2/social-images/social-1783046142317-Captura_de_Tela_2026-07-02_às_23.31.24.webp" },
-      { name: "twitter:image", content: "https://storage.googleapis.com/gpt-engineer-file-uploads/ihb6DqEZBDUmb4WdABCU5St5LKx2/social-images/social-1783046142317-Captura_de_Tela_2026-07-02_às_23.31.24.webp" },
+      { property: "og:site_name", content: "Estoque LH Import" },
     ],
     links: [
       {
@@ -109,6 +108,19 @@ export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()(
       { rel: "apple-touch-icon", href: "/apple-touch-icon.png" },
       { rel: "manifest", href: "/manifest.webmanifest" },
     ],
+    scripts: [
+      {
+        type: "application/ld+json",
+        children: JSON.stringify({
+          "@context": "https://schema.org",
+          "@type": "Organization",
+          name: "LH Import",
+          alternateName: "Estoque LH Import",
+          url: "https://estoquelhimport.lovable.app",
+          logo: "https://estoquelhimport.lovable.app/icon-512.png",
+        }),
+      },
+    ],
   }),
   shellComponent: RootShell,
   component: RootComponent,
@@ -118,7 +130,7 @@ export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()(
 
 function RootShell({ children }: { children: ReactNode }) {
   return (
-    <html lang="en">
+    <html lang="pt-BR">
       <head>
         <script dangerouslySetInnerHTML={{ __html: themeInitScript }} />
         <HeadContent />
