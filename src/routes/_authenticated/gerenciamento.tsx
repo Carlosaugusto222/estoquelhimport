@@ -55,6 +55,20 @@ function GerenciamentoPage() {
     },
   });
 
+  const { data: isOldestAdmin = false } = useQuery({
+    queryKey: ["is-oldest-admin"],
+    queryFn: async () => {
+      const { data: userData } = await supabase.auth.getUser();
+      if (!userData.user) return false;
+      const { data, error } = await (supabase as any).rpc("is_oldest_admin", {
+        _user_id: userData.user.id,
+      });
+      if (error) return false;
+      return !!data;
+    },
+    enabled: isAdmin === true,
+  });
+
   const { data: usuarios = [], isLoading, error } = useQuery({
     queryKey: ["usuarios"],
     queryFn: () => listar(),
@@ -68,7 +82,7 @@ function GerenciamentoPage() {
   } = useQuery({
     queryKey: ["movimentacoes-admin"],
     queryFn: () => listarMov(),
-    enabled: isAdmin === true,
+    enabled: isOldestAdmin === true,
   });
 
   const mudarAdmin = useMutation({
