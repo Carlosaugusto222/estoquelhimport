@@ -27,6 +27,7 @@ import {
   ShieldCheck, Eye, Users, MessageCircle,
 } from "lucide-react";
 import { toast } from "sonner";
+import { z } from "zod";
 import { SiteFooter } from "@/components/site-footer";
 import { ThemeToggle } from "@/components/theme-toggle";
 import { WhatsappSettingsDialog } from "@/components/whatsapp-settings-dialog";
@@ -140,11 +141,17 @@ function EstoquePage() {
     mutationFn: async (input: { produto_id: string; tipo: "entrada" | "saida"; quantidade: number; observacoes?: string }) => {
       const { data: userData } = await supabase.auth.getUser();
       if (!userData.user) throw new Error("Sem sessão");
+      if (!Number.isInteger(input.quantidade) || input.quantidade <= 0) {
+        throw new Error("Quantidade inválida");
+      }
+      if (input.tipo !== "entrada" && input.tipo !== "saida") {
+        throw new Error("Tipo de movimentação inválido");
+      }
       const { error } = await supabase.from("movimentacoes").insert({
         produto_id: input.produto_id,
         tipo: input.tipo,
         quantidade: input.quantidade,
-        observacoes: input.observacoes ?? null,
+        observacoes: input.observacoes?.slice(0, 500) ?? null,
         user_id: userData.user.id,
       });
       if (error) throw error;
@@ -152,9 +159,10 @@ function EstoquePage() {
     onSuccess: (_d, v) => {
       qc.invalidateQueries({ queryKey: ["produtos"] });
       qc.invalidateQueries({ queryKey: ["movimentacoes"] });
+      qc.invalidateQueries({ queryKey: ["movimentacoes-admin"] });
       toast.success(v.tipo === "entrada" ? "+1 no estoque — pronto para vender" : "Venda registrada — estoque atualizado");
     },
-    onError: (e: Error) => toast.error(e.message),
+    onError: (e: Error) => toast.error(e.message || "Não foi possível registrar a movimentação."),
   });
 
   const deleteProduto = useMutation({
@@ -166,7 +174,7 @@ function EstoquePage() {
       qc.invalidateQueries({ queryKey: ["produtos"] });
       toast.success("Peça removida do catálogo");
     },
-    onError: (e: Error) => toast.error(e.message),
+    onError: (e: Error) => toast.error(e.message || "Não foi possível excluir a peça."),
   });
 
   async function handleLogout() {
