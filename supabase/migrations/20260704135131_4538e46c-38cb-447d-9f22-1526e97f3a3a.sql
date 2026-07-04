@@ -1,0 +1,1 @@
+DROP POLICY IF EXISTS "primeiro admin (bootstrap)" ON public.user_roles;
