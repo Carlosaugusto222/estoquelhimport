@@ -51,7 +51,9 @@ export function formatWhatsappDisplay(number: string): string {
 
 export function buildWhatsappUrl(number: string, message: string): string {
   const n = normalizeWhatsappNumber(number);
-  const text = encodeURIComponent(message);
+  // Trunca mensagem para caber com folga no limite da URL do wa.me
+  const safeMessage = (message ?? "").slice(0, 1000);
+  const text = encodeURIComponent(safeMessage);
   return n ? `https://wa.me/${n}?text=${text}` : `https://wa.me/?text=${text}`;
 }
 
