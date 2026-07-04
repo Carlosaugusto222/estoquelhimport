@@ -35,6 +35,7 @@ export const Route = createFileRoute("/privacidade")({
 
 function PrivacidadePage() {
   const atualizadoEm = "04 de julho de 2026";
+  const dpoEmail = "lhimportpe2@gmail.com";
   return (
     <div className="min-h-screen bg-background">
       <header className="sticky top-0 z-10 border-b border-border/60 bg-background/80 backdrop-blur-md">
@@ -220,9 +221,12 @@ function PrivacidadePage() {
             <h2>9. Como falar conosco</h2>
             <p>
               Para exercer qualquer direito, tirar dúvidas ou reportar um incidente de
-              segurança, entre em contato com o administrador da sua loja. Se você é o
-              responsável pela LH Import e quer publicar aqui um e-mail dedicado ao
-              encarregado (DPO), basta informar que atualizamos esta seção.
+              segurança, entre em contato com o Encarregado de Proteção de Dados (DPO) da
+              LH Import pelo e-mail{" "}
+              <a href={`mailto:${dpoEmail}`}>
+                <strong>{dpoEmail}</strong>
+              </a>
+              . Responderemos no menor prazo possível, observados os prazos previstos na LGPD.
             </p>
 
             <h2>10. Alterações desta política</h2>
