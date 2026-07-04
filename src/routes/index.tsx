@@ -56,6 +56,8 @@ function LandingPage() {
               alt="Logo LH Import"
               width="36"
               height="36"
+              fetchPriority="high"
+              decoding="async"
               className="h-9 w-9 rounded-lg object-cover ring-1 ring-border/60"
             />
             <span className="font-display text-[15px] font-semibold tracking-tight">
