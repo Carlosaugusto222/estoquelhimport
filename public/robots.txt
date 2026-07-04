@@ -1,0 +1,7 @@
+User-agent: *
+Allow: /
+Disallow: /estoque
+Disallow: /gerenciamento
+Disallow: /auth
+
+Sitemap: https://estoquelhimport.lovable.app/sitemap.xml
