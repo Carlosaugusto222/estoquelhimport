@@ -482,25 +482,63 @@ function NovoProdutoDialog({ open, onOpenChange }: { open: boolean; onOpenChange
   const qc = useQueryClient();
   const [form, setForm] = useState<NovaForm>(FORM_INICIAL);
 
+  const novoProdutoSchema = z.object({
+    categoria: z.enum(["tela", "bateria"]),
+    modelo: z.string().trim().min(1, "Informe o modelo").max(120, "Modelo muito longo"),
+    qualidade: z.string().trim().max(80).optional(),
+    tier: z.enum(["", "ecoline", "premium"]),
+    fornecedor: z.string().trim().max(120).optional(),
+    numero_serie: z.string().trim().max(80).optional(),
+    preco_custo: z.number().min(0).max(1_000_000).nullable(),
+    preco_venda: z.number().min(0).max(1_000_000).nullable(),
+    estoque_minimo: z.number().int().min(0).max(100_000),
+    estoque_inicial: z.number().int().min(0).max(100_000),
+  });
+
+  function parseMoney(v: string): number | null {
+    if (!v.trim()) return null;
+    const n = Number(v);
+    return Number.isFinite(n) ? n : null;
+  }
+  function parseInt0(v: string): number {
+    const n = Number(v);
+    return Number.isFinite(n) ? Math.trunc(n) : 0;
+  }
+
   const criar = useMutation({
     mutationFn: async () => {
       const { data: userData } = await supabase.auth.getUser();
       if (!userData.user) throw new Error("Sem sessão");
-      if (!form.modelo.trim()) throw new Error("Informe o modelo");
-      const inicial = Number(form.estoque_inicial) || 0;
+      const parsed = novoProdutoSchema.safeParse({
+        categoria: form.categoria,
+        modelo: form.modelo,
+        qualidade: form.qualidade,
+        tier: form.tier,
+        fornecedor: form.fornecedor,
+        numero_serie: form.numero_serie,
+        preco_custo: parseMoney(form.preco_custo),
+        preco_venda: parseMoney(form.preco_venda),
+        estoque_minimo: parseInt0(form.estoque_minimo),
+        estoque_inicial: parseInt0(form.estoque_inicial),
+      });
+      if (!parsed.success) {
+        throw new Error(parsed.error.issues[0]?.message ?? "Dados inválidos");
+      }
+      const p = parsed.data;
+      const inicial = p.estoque_inicial;
       const { data: prod, error } = await supabase.from("produtos").insert({
         user_id: userData.user.id,
-        categoria: form.categoria,
-        modelo: form.modelo.trim(),
-        qualidade: form.qualidade.trim() || null,
-        tier: form.tier || null,
-        fornecedor: form.fornecedor.trim() || null,
+        categoria: p.categoria,
+        modelo: p.modelo,
+        qualidade: p.qualidade || null,
+        tier: p.tier || null,
+        fornecedor: p.fornecedor || null,
         data_compra: form.data_compra || null,
         tem_garantia: form.tem_garantia,
-        numero_serie: form.numero_serie.trim() || null,
-        preco_custo: form.preco_custo ? Number(form.preco_custo) : null,
-        preco_venda: form.preco_venda ? Number(form.preco_venda) : null,
-        estoque_minimo: Number(form.estoque_minimo) || 0,
+        numero_serie: p.numero_serie || null,
+        preco_custo: p.preco_custo,
+        preco_venda: p.preco_venda,
+        estoque_minimo: p.estoque_minimo,
       }).select().single();
       if (error) throw error;
       if (inicial > 0 && prod) {
@@ -520,7 +558,7 @@ function NovoProdutoDialog({ open, onOpenChange }: { open: boolean; onOpenChange
       setForm(FORM_INICIAL);
       onOpenChange(false);
     },
-    onError: (e: Error) => toast.error(e.message),
+    onError: (e: Error) => toast.error(e.message || "Não foi possível cadastrar a peça."),
   });
 
   return (
