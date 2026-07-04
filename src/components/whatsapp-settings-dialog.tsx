@@ -26,15 +26,21 @@ export function WhatsappSettingsDialog({
   }, [open]);
 
   function salvar() {
-    if (!value.replace(/\D+/g, "")) {
-      toast.error("Informe um número de WhatsApp válido");
+    const digits = value.replace(/\D+/g, "");
+    if (digits.length < 10 || digits.length > 15) {
+      toast.error("Número de WhatsApp inválido (use DDD + número, ex.: 11 91234-5678)");
       return;
     }
-    setStoredWhatsappNumber(value);
-    const stored = getStoredWhatsappNumber();
-    toast.success(`WhatsApp salvo: ${formatWhatsappDisplay(stored)}`);
-    onSaved?.(stored);
-    onOpenChange(false);
+    try {
+      setStoredWhatsappNumber(value);
+      const stored = getStoredWhatsappNumber();
+      if (!stored) throw new Error("empty");
+      toast.success(`WhatsApp salvo: ${formatWhatsappDisplay(stored)}`);
+      onSaved?.(stored);
+      onOpenChange(false);
+    } catch {
+      toast.error("Não foi possível salvar (armazenamento indisponível).");
+    }
   }
 
   function limpar() {
