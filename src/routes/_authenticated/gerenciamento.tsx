@@ -259,7 +259,7 @@ function GerenciamentoPage() {
           </Card>
         )}
 
-        {isAdmin && (
+        {isOldestAdmin && (
           <Card className="rounded-2xl border-border shadow-[0_1px_2px_0_oklch(0.322_0.028_258/0.04),0_8px_24px_-12px_oklch(0.322_0.028_258/0.08)]">
             <CardContent className="p-4 sm:p-6 space-y-4">
               <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2">
@@ -270,7 +270,7 @@ function GerenciamentoPage() {
                   <div className="min-w-0">
                     <h2 className="font-display font-semibold tracking-tight">Auditoria de movimentações</h2>
                     <p className="text-sm text-muted-foreground">
-                      Histórico completo de entradas e saídas, com data, hora e responsável.
+                      Visível apenas ao administrador principal. Histórico completo de entradas e saídas, com data, hora e responsável.
                     </p>
                   </div>
                 </div>
