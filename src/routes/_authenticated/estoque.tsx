@@ -34,6 +34,7 @@ import { WhatsappSettingsDialog } from "@/components/whatsapp-settings-dialog";
 import {
   getStoredWhatsappNumber, mensagemConsulta, openWhatsapp,
 } from "@/lib/whatsapp";
+import { sanitizeText, sanitizeNullable } from "@/lib/sanitize";
 
 export const Route = createFileRoute("/_authenticated/estoque")({
   component: EstoquePage,
@@ -511,11 +512,11 @@ function NovoProdutoDialog({ open, onOpenChange }: { open: boolean; onOpenChange
       if (!userData.user) throw new Error("Sem sessão");
       const parsed = novoProdutoSchema.safeParse({
         categoria: form.categoria,
-        modelo: form.modelo,
-        qualidade: form.qualidade,
+        modelo: sanitizeText(form.modelo),
+        qualidade: sanitizeText(form.qualidade),
         tier: form.tier,
-        fornecedor: form.fornecedor,
-        numero_serie: form.numero_serie,
+        fornecedor: sanitizeText(form.fornecedor),
+        numero_serie: sanitizeText(form.numero_serie),
         preco_custo: parseMoney(form.preco_custo),
         preco_venda: parseMoney(form.preco_venda),
         estoque_minimo: parseInt0(form.estoque_minimo),
@@ -530,12 +531,12 @@ function NovoProdutoDialog({ open, onOpenChange }: { open: boolean; onOpenChange
         user_id: userData.user.id,
         categoria: p.categoria,
         modelo: p.modelo,
-        qualidade: p.qualidade || null,
+        qualidade: sanitizeNullable(p.qualidade),
         tier: p.tier || null,
-        fornecedor: p.fornecedor || null,
+        fornecedor: sanitizeNullable(p.fornecedor),
         data_compra: form.data_compra || null,
         tem_garantia: form.tem_garantia,
-        numero_serie: p.numero_serie || null,
+        numero_serie: sanitizeNullable(p.numero_serie),
         preco_custo: p.preco_custo,
         preco_venda: p.preco_venda,
         estoque_minimo: p.estoque_minimo,
