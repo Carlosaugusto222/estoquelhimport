@@ -495,7 +495,7 @@ function fmtMoney(v: number | null) {
 }
 
 type NovaForm = {
-  categoria: "tela" | "bateria";
+  categoria: Categoria;
   modelo: string;
   qualidade: string;
   tier: "" | "ecoline" | "premium";
@@ -520,7 +520,7 @@ function NovoProdutoDialog({ open, onOpenChange }: { open: boolean; onOpenChange
   const [form, setForm] = useState<NovaForm>(FORM_INICIAL);
 
   const novoProdutoSchema = z.object({
-    categoria: z.enum(["tela", "bateria"]),
+    categoria: z.enum(["tela", "bateria", "camera", "tampa_traseira", "conector_carga"]),
     modelo: z.string().trim().min(1, "Informe o modelo").max(120, "Modelo muito longo"),
     qualidade: z.string().trim().max(80).optional(),
     tier: z.enum(["", "ecoline", "premium"]),
@@ -613,11 +613,12 @@ function NovoProdutoDialog({ open, onOpenChange }: { open: boolean; onOpenChange
           className="grid grid-cols-1 sm:grid-cols-2 gap-3"
         >
           <Field label="Categoria">
-            <Select value={form.categoria} onValueChange={(v) => setForm({ ...form, categoria: v as "tela" | "bateria" })}>
+            <Select value={form.categoria} onValueChange={(v) => setForm({ ...form, categoria: v as Categoria })}>
               <SelectTrigger><SelectValue /></SelectTrigger>
               <SelectContent>
-                <SelectItem value="tela">Tela</SelectItem>
-                <SelectItem value="bateria">Bateria</SelectItem>
+                {CATEGORIAS.map((c) => (
+                  <SelectItem key={c.value} value={c.value}>{c.label}</SelectItem>
+                ))}
               </SelectContent>
             </Select>
           </Field>
