@@ -24,7 +24,7 @@ import {
 } from "@/components/ui/alert-dialog";
 import {
   Plus, Minus, Search, Trash2, LogOut, Package, AlertTriangle, Smartphone, BatteryCharging, History,
-  ShieldCheck, Eye, Users, MessageCircle,
+  ShieldCheck, Eye, Users, MessageCircle, Camera, Shield, Cable,
 } from "lucide-react";
 import { toast } from "sonner";
 import { z } from "zod";
@@ -36,13 +36,27 @@ import {
 } from "@/lib/whatsapp";
 import { sanitizeText, sanitizeNullable } from "@/lib/sanitize";
 
+type Categoria = "tela" | "bateria" | "camera" | "tampa_traseira" | "conector_carga";
+
+const CATEGORIAS: { value: Categoria; label: string; short: string }[] = [
+  { value: "tela", label: "Telas", short: "Tela" },
+  { value: "bateria", label: "Baterias", short: "Bateria" },
+  { value: "camera", label: "Câmeras", short: "Câmera" },
+  { value: "tampa_traseira", label: "Tampas traseiras", short: "Tampa" },
+  { value: "conector_carga", label: "Conectores de carga", short: "Conector" },
+];
+
+const CATEGORIA_LABEL: Record<string, string> = Object.fromEntries(
+  CATEGORIAS.map((c) => [c.value, c.short]),
+);
+
 export const Route = createFileRoute("/_authenticated/estoque")({
   component: EstoquePage,
 });
 
 type Produto = {
   id: string;
-  categoria: "tela" | "bateria";
+  categoria: Categoria | string;
   modelo: string;
   qualidade: string | null;
   tier: "ecoline" | "premium" | null;
@@ -69,7 +83,7 @@ type Movimentacao = {
 function EstoquePage() {
   const navigate = useNavigate();
   const qc = useQueryClient();
-  const [filtro, setFiltro] = useState<"todos" | "tela" | "bateria">("todos");
+  const [filtro, setFiltro] = useState<"todos" | Categoria>("todos");
   const [busca, setBusca] = useState("");
   const [openNovo, setOpenNovo] = useState(false);
   const [historicoProduto, setHistoricoProduto] = useState<Produto | null>(null);
@@ -131,11 +145,15 @@ function EstoquePage() {
   }, [produtos, filtro, busca]);
 
   const totais = useMemo(() => {
-    const telas = produtos.filter((p) => p.categoria === "tela");
-    const baterias = produtos.filter((p) => p.categoria === "bateria");
-    const soma = (arr: Produto[]) => arr.reduce((s, p) => s + p.estoque_atual, 0);
+    const soma = (cat: string) =>
+      produtos.filter((p) => p.categoria === cat).reduce((s, p) => s + p.estoque_atual, 0);
     const alertas = produtos.filter((p) => p.estoque_atual <= p.estoque_minimo).length;
-    return { telas: soma(telas), baterias: soma(baterias), alertas };
+    return {
+      telas: soma("tela"),
+      baterias: soma("bateria"),
+      outras: soma("camera") + soma("tampa_traseira") + soma("conector_carga"),
+      alertas,
+    };
   }, [produtos]);
 
   const movMutation = useMutation({
@@ -238,16 +256,17 @@ function EstoquePage() {
           </Card>
         )}
 
-        <BentoStats telas={totais.telas} baterias={totais.baterias} alertas={totais.alertas} totalPecas={produtos.length} />
+        <BentoStats telas={totais.telas} baterias={totais.baterias} outras={totais.outras} alertas={totais.alertas} totalPecas={produtos.length} />
 
         <Card className="rounded-2xl border-border shadow-[0_1px_2px_0_oklch(0.322_0.028_258/0.04),0_8px_24px_-12px_oklch(0.322_0.028_258/0.08)]">
           <CardContent className="p-3 sm:p-5 space-y-4">
             <div className="flex flex-col md:flex-row md:items-center gap-3">
               <Tabs value={filtro} onValueChange={(v) => setFiltro(v as typeof filtro)} className="w-full md:w-auto">
-                <TabsList className="w-full rounded-lg bg-muted p-1 md:w-auto">
+                <TabsList className="w-full flex-wrap rounded-lg bg-muted p-1 md:w-auto">
                   <TabsTrigger value="todos">Todos</TabsTrigger>
-                  <TabsTrigger value="tela">Telas</TabsTrigger>
-                  <TabsTrigger value="bateria">Baterias</TabsTrigger>
+                  {CATEGORIAS.map((c) => (
+                    <TabsTrigger key={c.value} value={c.value}>{c.label}</TabsTrigger>
+                  ))}
                 </TabsList>
               </Tabs>
               <div className="relative flex-1">
@@ -296,7 +315,7 @@ function EstoquePage() {
                       <TableRow key={p.id} className={`border-border transition-colors ${baixo ? "bg-destructive/[0.04] hover:bg-destructive/[0.06]" : "hover:bg-muted/40"}`}>
                         <TableCell>
                           <Badge variant={p.categoria === "tela" ? "default" : "secondary"} className="rounded-md text-[10px] font-semibold uppercase tracking-wide">
-                            {p.categoria === "tela" ? "Tela" : "Bateria"}
+                            {CATEGORIA_LABEL[p.categoria] ?? p.categoria}
                           </Badge>
                         </TableCell>
                         <TableCell className="font-medium">{p.modelo}</TableCell>
@@ -382,8 +401,8 @@ function EstoquePage() {
   );
 }
 
-function BentoStats({ telas, baterias, alertas, totalPecas }: { telas: number; baterias: number; alertas: number; totalPecas: number }) {
-  const totalUnidades = telas + baterias;
+function BentoStats({ telas, baterias, outras, alertas, totalPecas }: { telas: number; baterias: number; outras: number; alertas: number; totalPecas: number }) {
+  const totalUnidades = telas + baterias + outras;
   const pctTelas = totalUnidades > 0 ? Math.round((telas / totalUnidades) * 100) : 0;
   return (
     <div className="grid grid-cols-12 gap-3 sm:gap-4">
@@ -420,6 +439,21 @@ function BentoStats({ telas, baterias, alertas, totalPecas }: { telas: number; b
           </div>
           <div className="flex items-center gap-1.5 text-[11px] text-muted-foreground">
             <BatteryCharging className="h-3.5 w-3.5" /> {totalPecas} peça{totalPecas === 1 ? "" : "s"} no catálogo
+          </div>
+        </CardContent>
+      </Card>
+
+      {/* Small tile — Outras peças */}
+      <Card className="col-span-12 rounded-2xl border-border shadow-[0_1px_2px_0_oklch(0.322_0.028_258/0.04)] transition-shadow hover:shadow-[0_8px_24px_-12px_oklch(0.322_0.028_258/0.10)] md:col-span-6 lg:col-span-12">
+        <CardContent className="flex h-full flex-col justify-between gap-3 p-5 sm:flex-row sm:items-center">
+          <div>
+            <p className="font-display text-[11px] font-semibold uppercase tracking-widest text-muted-foreground">Câmeras, tampas e conectores</p>
+            <h3 className="mt-2 font-display text-3xl font-semibold tracking-tight tabular-nums">{outras}</h3>
+          </div>
+          <div className="flex items-center gap-3 text-[11px] text-muted-foreground">
+            <span className="inline-flex items-center gap-1"><Camera className="h-3.5 w-3.5" /> Câmera</span>
+            <span className="inline-flex items-center gap-1"><Shield className="h-3.5 w-3.5" /> Tampa</span>
+            <span className="inline-flex items-center gap-1"><Cable className="h-3.5 w-3.5" /> Conector</span>
           </div>
         </CardContent>
       </Card>
@@ -461,7 +495,7 @@ function fmtMoney(v: number | null) {
 }
 
 type NovaForm = {
-  categoria: "tela" | "bateria";
+  categoria: Categoria;
   modelo: string;
   qualidade: string;
   tier: "" | "ecoline" | "premium";
@@ -486,7 +520,7 @@ function NovoProdutoDialog({ open, onOpenChange }: { open: boolean; onOpenChange
   const [form, setForm] = useState<NovaForm>(FORM_INICIAL);
 
   const novoProdutoSchema = z.object({
-    categoria: z.enum(["tela", "bateria"]),
+    categoria: z.enum(["tela", "bateria", "camera", "tampa_traseira", "conector_carga"]),
     modelo: z.string().trim().min(1, "Informe o modelo").max(120, "Modelo muito longo"),
     qualidade: z.string().trim().max(80).optional(),
     tier: z.enum(["", "ecoline", "premium"]),
@@ -579,11 +613,12 @@ function NovoProdutoDialog({ open, onOpenChange }: { open: boolean; onOpenChange
           className="grid grid-cols-1 sm:grid-cols-2 gap-3"
         >
           <Field label="Categoria">
-            <Select value={form.categoria} onValueChange={(v) => setForm({ ...form, categoria: v as "tela" | "bateria" })}>
+            <Select value={form.categoria} onValueChange={(v) => setForm({ ...form, categoria: v as Categoria })}>
               <SelectTrigger><SelectValue /></SelectTrigger>
               <SelectContent>
-                <SelectItem value="tela">Tela</SelectItem>
-                <SelectItem value="bateria">Bateria</SelectItem>
+                {CATEGORIAS.map((c) => (
+                  <SelectItem key={c.value} value={c.value}>{c.label}</SelectItem>
+                ))}
               </SelectContent>
             </Select>
           </Field>
