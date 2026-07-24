@@ -401,8 +401,8 @@ function EstoquePage() {
   );
 }
 
-function BentoStats({ telas, baterias, alertas, totalPecas }: { telas: number; baterias: number; alertas: number; totalPecas: number }) {
-  const totalUnidades = telas + baterias;
+function BentoStats({ telas, baterias, outras, alertas, totalPecas }: { telas: number; baterias: number; outras: number; alertas: number; totalPecas: number }) {
+  const totalUnidades = telas + baterias + outras;
   const pctTelas = totalUnidades > 0 ? Math.round((telas / totalUnidades) * 100) : 0;
   return (
     <div className="grid grid-cols-12 gap-3 sm:gap-4">
@@ -439,6 +439,21 @@ function BentoStats({ telas, baterias, alertas, totalPecas }: { telas: number; b
           </div>
           <div className="flex items-center gap-1.5 text-[11px] text-muted-foreground">
             <BatteryCharging className="h-3.5 w-3.5" /> {totalPecas} peça{totalPecas === 1 ? "" : "s"} no catálogo
+          </div>
+        </CardContent>
+      </Card>
+
+      {/* Small tile — Outras peças */}
+      <Card className="col-span-12 rounded-2xl border-border shadow-[0_1px_2px_0_oklch(0.322_0.028_258/0.04)] transition-shadow hover:shadow-[0_8px_24px_-12px_oklch(0.322_0.028_258/0.10)] md:col-span-6 lg:col-span-12">
+        <CardContent className="flex h-full flex-col justify-between gap-3 p-5 sm:flex-row sm:items-center">
+          <div>
+            <p className="font-display text-[11px] font-semibold uppercase tracking-widest text-muted-foreground">Câmeras, tampas e conectores</p>
+            <h3 className="mt-2 font-display text-3xl font-semibold tracking-tight tabular-nums">{outras}</h3>
+          </div>
+          <div className="flex items-center gap-3 text-[11px] text-muted-foreground">
+            <span className="inline-flex items-center gap-1"><Camera className="h-3.5 w-3.5" /> Câmera</span>
+            <span className="inline-flex items-center gap-1"><Shield className="h-3.5 w-3.5" /> Tampa</span>
+            <span className="inline-flex items-center gap-1"><Cable className="h-3.5 w-3.5" /> Conector</span>
           </div>
         </CardContent>
       </Card>
