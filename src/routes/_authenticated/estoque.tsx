@@ -689,6 +689,71 @@ function Field({ label, children }: { label: string; children: React.ReactNode }
   );
 }
 
+function EditarProdutoDialog({ produto, onClose }: { produto: Produto | null; onClose: () => void }) {
+  const qc = useQueryClient();
+  const [modelo, setModelo] = useState("");
+  const [categoria, setCategoria] = useState<Categoria>("tela");
+
+  useMemo(() => {
+    if (produto) {
+      setModelo(produto.modelo);
+      setCategoria((produto.categoria as Categoria) ?? "tela");
+    }
+  }, [produto]);
+
+  const salvar = useMutation({
+    mutationFn: async () => {
+      if (!produto) return;
+      const nome = sanitizeText(modelo).slice(0, 120);
+      if (!nome) throw new Error("Informe o modelo");
+      const { error } = await supabase
+        .from("produtos")
+        .update({ modelo: nome, categoria })
+        .eq("id", produto.id);
+      if (error) throw error;
+    },
+    onSuccess: () => {
+      qc.invalidateQueries({ queryKey: ["produtos"] });
+      toast.success("Peça atualizada");
+      onClose();
+    },
+    onError: (e: Error) => toast.error(e.message || "Não foi possível atualizar a peça."),
+  });
+
+  return (
+    <Dialog open={!!produto} onOpenChange={(o) => !o && onClose()}>
+      <DialogContent className="w-[calc(100vw-1.5rem)] max-w-md rounded-2xl">
+        <DialogHeader>
+          <DialogTitle>Editar peça</DialogTitle>
+          <DialogDescription>Ajuste o nome e a categoria da peça.</DialogDescription>
+        </DialogHeader>
+        <form
+          onSubmit={(e) => { e.preventDefault(); salvar.mutate(); }}
+          className="space-y-3"
+        >
+          <Field label="Modelo">
+            <Input value={modelo} onChange={(e) => setModelo(e.target.value)} required />
+          </Field>
+          <Field label="Categoria">
+            <Select value={categoria} onValueChange={(v) => setCategoria(v as Categoria)}>
+              <SelectTrigger><SelectValue /></SelectTrigger>
+              <SelectContent>
+                {CATEGORIAS.map((c) => (
+                  <SelectItem key={c.value} value={c.value}>{c.label}</SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
+          </Field>
+          <DialogFooter>
+            <Button type="button" variant="ghost" onClick={onClose}>Cancelar</Button>
+            <Button type="submit" disabled={salvar.isPending}>{salvar.isPending ? "Salvando…" : "Salvar"}</Button>
+          </DialogFooter>
+        </form>
+      </DialogContent>
+    </Dialog>
+  );
+}
+
 function HistoricoDialog({ produto, onClose }: { produto: Produto | null; onClose: () => void }) {
   const { data: movs = [], isLoading } = useQuery({
     queryKey: ["movimentacoes", produto?.id],
