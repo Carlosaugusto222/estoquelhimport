@@ -1,6 +1,6 @@
 import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
 import logo from "@/assets/logo.webp";
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
 import { Button } from "@/components/ui/button";
@@ -24,7 +24,7 @@ import {
 } from "@/components/ui/alert-dialog";
 import {
   Plus, Minus, Search, Trash2, LogOut, Package, AlertTriangle, Smartphone, BatteryCharging, History,
-  ShieldCheck, Eye, Users, MessageCircle, Camera, Shield, Cable,
+  ShieldCheck, Eye, Users, MessageCircle, Camera, Shield, Cable, Pencil,
 } from "lucide-react";
 import { toast } from "sonner";
 import { z } from "zod";
@@ -87,6 +87,7 @@ function EstoquePage() {
   const [busca, setBusca] = useState("");
   const [openNovo, setOpenNovo] = useState(false);
   const [historicoProduto, setHistoricoProduto] = useState<Produto | null>(null);
+  const [editProduto, setEditProduto] = useState<Produto | null>(null);
   const [waSettingsOpen, setWaSettingsOpen] = useState(false);
 
   function consultarNoWhatsapp(p: Produto) {
@@ -352,6 +353,11 @@ function EstoquePage() {
                             <Button size="icon" variant="ghost" title="Ver histórico" className="h-8 w-8 rounded-md text-muted-foreground hover:text-foreground" onClick={() => setHistoricoProduto(p)}>
                               <History className="h-4 w-4" />
                             </Button>
+                            {isAdmin && (
+                              <Button size="icon" variant="ghost" title="Editar peça" className="h-8 w-8 rounded-md text-muted-foreground hover:text-foreground" onClick={() => setEditProduto(p)}>
+                                <Pencil className="h-4 w-4" />
+                              </Button>
+                            )}
                             <Button
                               size="icon"
                               variant="ghost"
@@ -395,6 +401,7 @@ function EstoquePage() {
       </main>
 
       <HistoricoDialog produto={historicoProduto} onClose={() => setHistoricoProduto(null)} />
+      <EditarProdutoDialog produto={editProduto} onClose={() => setEditProduto(null)} />
       <WhatsappSettingsDialog open={waSettingsOpen} onOpenChange={setWaSettingsOpen} />
       <SiteFooter />
     </div>
@@ -679,6 +686,71 @@ function Field({ label, children }: { label: string; children: React.ReactNode }
       <Label className="text-xs text-muted-foreground">{label}</Label>
       {children}
     </div>
+  );
+}
+
+function EditarProdutoDialog({ produto, onClose }: { produto: Produto | null; onClose: () => void }) {
+  const qc = useQueryClient();
+  const [modelo, setModelo] = useState("");
+  const [categoria, setCategoria] = useState<Categoria>("tela");
+
+  useEffect(() => {
+    if (produto) {
+      setModelo(produto.modelo);
+      setCategoria((produto.categoria as Categoria) ?? "tela");
+    }
+  }, [produto]);
+
+  const salvar = useMutation({
+    mutationFn: async () => {
+      if (!produto) return;
+      const nome = sanitizeText(modelo).slice(0, 120);
+      if (!nome) throw new Error("Informe o modelo");
+      const { error } = await supabase
+        .from("produtos")
+        .update({ modelo: nome, categoria })
+        .eq("id", produto.id);
+      if (error) throw error;
+    },
+    onSuccess: () => {
+      qc.invalidateQueries({ queryKey: ["produtos"] });
+      toast.success("Peça atualizada");
+      onClose();
+    },
+    onError: (e: Error) => toast.error(e.message || "Não foi possível atualizar a peça."),
+  });
+
+  return (
+    <Dialog open={!!produto} onOpenChange={(o) => !o && onClose()}>
+      <DialogContent className="w-[calc(100vw-1.5rem)] max-w-md rounded-2xl">
+        <DialogHeader>
+          <DialogTitle>Editar peça</DialogTitle>
+          <DialogDescription>Ajuste o nome e a categoria da peça.</DialogDescription>
+        </DialogHeader>
+        <form
+          onSubmit={(e) => { e.preventDefault(); salvar.mutate(); }}
+          className="space-y-3"
+        >
+          <Field label="Modelo">
+            <Input value={modelo} onChange={(e) => setModelo(e.target.value)} required />
+          </Field>
+          <Field label="Categoria">
+            <Select value={categoria} onValueChange={(v) => setCategoria(v as Categoria)}>
+              <SelectTrigger><SelectValue /></SelectTrigger>
+              <SelectContent>
+                {CATEGORIAS.map((c) => (
+                  <SelectItem key={c.value} value={c.value}>{c.label}</SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
+          </Field>
+          <DialogFooter>
+            <Button type="button" variant="ghost" onClick={onClose}>Cancelar</Button>
+            <Button type="submit" disabled={salvar.isPending}>{salvar.isPending ? "Salvando…" : "Salvar"}</Button>
+          </DialogFooter>
+        </form>
+      </DialogContent>
+    </Dialog>
   );
 }
 
