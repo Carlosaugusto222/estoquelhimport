@@ -24,7 +24,7 @@ import {
 } from "@/components/ui/alert-dialog";
 import {
   Plus, Minus, Search, Trash2, LogOut, Package, AlertTriangle, Smartphone, BatteryCharging, History,
-  ShieldCheck, Eye, Users, MessageCircle, Camera, Shield, Cable,
+  ShieldCheck, Eye, Users, MessageCircle, Camera, Shield, Cable, Pencil,
 } from "lucide-react";
 import { toast } from "sonner";
 import { z } from "zod";
@@ -87,6 +87,7 @@ function EstoquePage() {
   const [busca, setBusca] = useState("");
   const [openNovo, setOpenNovo] = useState(false);
   const [historicoProduto, setHistoricoProduto] = useState<Produto | null>(null);
+  const [editProduto, setEditProduto] = useState<Produto | null>(null);
   const [waSettingsOpen, setWaSettingsOpen] = useState(false);
 
   function consultarNoWhatsapp(p: Produto) {
@@ -352,6 +353,11 @@ function EstoquePage() {
                             <Button size="icon" variant="ghost" title="Ver histórico" className="h-8 w-8 rounded-md text-muted-foreground hover:text-foreground" onClick={() => setHistoricoProduto(p)}>
                               <History className="h-4 w-4" />
                             </Button>
+                            {isAdmin && (
+                              <Button size="icon" variant="ghost" title="Editar peça" className="h-8 w-8 rounded-md text-muted-foreground hover:text-foreground" onClick={() => setEditProduto(p)}>
+                                <Pencil className="h-4 w-4" />
+                              </Button>
+                            )}
                             <Button
                               size="icon"
                               variant="ghost"
@@ -395,6 +401,7 @@ function EstoquePage() {
       </main>
 
       <HistoricoDialog produto={historicoProduto} onClose={() => setHistoricoProduto(null)} />
+      <EditarProdutoDialog produto={editProduto} onClose={() => setEditProduto(null)} />
       <WhatsappSettingsDialog open={waSettingsOpen} onOpenChange={setWaSettingsOpen} />
       <SiteFooter />
     </div>
