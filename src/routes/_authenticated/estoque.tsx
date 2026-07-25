@@ -1,6 +1,6 @@
 import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
 import logo from "@/assets/logo.webp";
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
 import { Button } from "@/components/ui/button";
@@ -694,7 +694,7 @@ function EditarProdutoDialog({ produto, onClose }: { produto: Produto | null; on
   const [modelo, setModelo] = useState("");
   const [categoria, setCategoria] = useState<Categoria>("tela");
 
-  useMemo(() => {
+  useEffect(() => {
     if (produto) {
       setModelo(produto.modelo);
       setCategoria((produto.categoria as Categoria) ?? "tela");
