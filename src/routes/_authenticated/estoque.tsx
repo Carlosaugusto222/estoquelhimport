@@ -24,7 +24,7 @@ import {
 } from "@/components/ui/alert-dialog";
 import {
   Plus, Minus, Search, Trash2, LogOut, Package, AlertTriangle, Smartphone, BatteryCharging, History,
-  ShieldCheck, Eye, Users, MessageCircle, Camera, Shield, Cable, Pencil,
+  ShieldCheck, Eye, Users, MessageCircle, Camera, Shield, Cable, Pencil, Share2,
 } from "lucide-react";
 import { toast } from "sonner";
 import { z } from "zod";
@@ -32,7 +32,7 @@ import { SiteFooter } from "@/components/site-footer";
 import { ThemeToggle } from "@/components/theme-toggle";
 import { WhatsappSettingsDialog } from "@/components/whatsapp-settings-dialog";
 import {
-  getStoredWhatsappNumber, mensagemConsulta, openWhatsapp,
+  getStoredWhatsappNumber, mensagemConsulta, mensagemEstoque, openWhatsapp,
 } from "@/lib/whatsapp";
 import { sanitizeText, sanitizeNullable } from "@/lib/sanitize";
 
@@ -98,6 +98,17 @@ function EstoquePage() {
       return;
     }
     openWhatsapp(numero, mensagemConsulta(p));
+  }
+
+  function compartilharEstoque() {
+    const lista = produtosFiltrados.filter((p) => p.estoque_atual > 0);
+    if (lista.length === 0) {
+      toast.info("Nenhuma peça com estoque disponível para compartilhar.");
+      return;
+    }
+    const cat = filtro === "todos" ? null : CATEGORIAS.find((c) => c.value === filtro)?.label;
+    const titulo = cat ? `Estoque de ${cat} — LH Import` : "Estoque atual — LH Import";
+    openWhatsapp("", mensagemEstoque(lista, { titulo }));
   }
 
   const { data: isAdmin = false } = useQuery({
