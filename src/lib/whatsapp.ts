@@ -83,3 +83,60 @@ export function mensagemConsulta(p: ProdutoConsulta): string {
   linhas.push(``, `Vocês têm em estoque? Qual o valor e prazo?`);
   return linhas.join("\n");
 }
+
+export type ProdutoEstoque = {
+  categoria: string | null;
+  modelo: string;
+  qualidade?: string | null;
+  tier?: string | null;
+  estoque_atual: number;
+};
+
+const CATEGORIA_NOMES: Record<string, string> = {
+  tela: "Telas",
+  bateria: "Baterias",
+  camera: "Câmeras",
+  tampa_traseira: "Tampas traseiras",
+  conector_carga: "Conectores de carga",
+};
+
+/** Monta uma mensagem-resumo do estoque atual, agrupada por categoria. */
+export function mensagemEstoque(
+  produtos: ProdutoEstoque[],
+  opts?: { titulo?: string; incluirZerados?: boolean },
+): string {
+  const titulo = opts?.titulo ?? "Estoque atual — LH Import";
+  const incluirZerados = opts?.incluirZerados ?? false;
+  const lista = produtos.filter((p) => incluirZerados || p.estoque_atual > 0);
+
+  if (lista.length === 0) {
+    return `*${titulo}*\n\nNo momento não há peças disponíveis em estoque.`;
+  }
+
+  const grupos = new Map<string, ProdutoEstoque[]>();
+  for (const p of lista) {
+    const key = p.categoria ?? "outros";
+    if (!grupos.has(key)) grupos.set(key, []);
+    grupos.get(key)!.push(p);
+  }
+
+  const data = new Date().toLocaleDateString("pt-BR");
+  const linhas: string[] = [`*${titulo}*`, `_Atualizado em ${data}_`, ``];
+  let total = 0;
+
+  for (const [cat, itens] of grupos) {
+    linhas.push(`*${CATEGORIA_NOMES[cat] ?? cat}*`);
+    itens
+      .sort((a, b) => a.modelo.localeCompare(b.modelo))
+      .forEach((p) => {
+        const spec = [p.qualidade, p.tier].filter(Boolean).join(" · ");
+        const detalhe = spec ? ` (${spec})` : "";
+        linhas.push(`• ${p.modelo}${detalhe} — *${p.estoque_atual}* un.`);
+        total += p.estoque_atual;
+      });
+    linhas.push(``);
+  }
+
+  linhas.push(`_Total: ${total} peça${total === 1 ? "" : "s"} em ${lista.length} item(ns)._`);
+  return linhas.join("\n");
+}
