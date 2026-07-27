@@ -291,6 +291,17 @@ function EstoquePage() {
                 />
               </div>
               {isAdmin && <NovoProdutoDialog open={openNovo} onOpenChange={setOpenNovo} />}
+              <Button
+                type="button"
+                variant="outline"
+                onClick={compartilharEstoque}
+                className="rounded-lg"
+                aria-label="Compartilhar estoque no WhatsApp"
+                title="Compartilhar estoque no WhatsApp"
+              >
+                <Share2 className="h-4 w-4 sm:mr-1" />
+                <span className="hidden sm:inline">Compartilhar</span>
+              </Button>
             </div>
 
             <div className="overflow-x-auto rounded-xl border border-border">
